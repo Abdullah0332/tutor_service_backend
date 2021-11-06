@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema(
     email: { type: String },
     password: { type: String },
     user_type: { type: String, enum: ["parent", "individual", "tutor"] },
+    otp: { type: Number },
   },
   { timestamps: true }
 );

@@ -3,12 +3,11 @@ import cors from "cors";
 import dbConnection from "./db/connection.js";
 import morgan from "morgan";
 import chalk from "chalk";
-
 import bodyParser from "body-parser";
 
-// import userRoutes from "./routes/user.routes.js";
+import apiRouter from "./routes/routes.js";
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 //@initializing App
 const app = express();
@@ -18,7 +17,7 @@ app.use(cors({ origin: true }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-// app.use("/api", userRoutes);
+app.use("/api", apiRouter);
 
 // Handle Uncaught exceptions
 process.on("uncaughtException", (err) => {

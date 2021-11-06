@@ -17,15 +17,11 @@ export const auth = async (req, res, next) => {
 
     const decoded = jwt?.verify(token, config.JWT_SECRET);
     const user = await User.findOne({ _id: decoded.id });
+
     if (!user) {
       return res
         .status(401)
         .json({ message: "Token expired, please generate new one" });
-    }
-    if (user.accountStatus === "blocked") {
-      return res.status(400).json({
-        message: "Your account has been blocked by admin, contact admin",
-      });
     }
 
     req.user = await User.findById(decoded.id);
