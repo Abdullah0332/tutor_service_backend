@@ -19,6 +19,10 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/api", apiRouter);
 
+app.use("/", (req, res, next) => {
+  res.send("Backend Running.");
+});
+
 // Handle Uncaught exceptions
 process.on("uncaughtException", (err) => {
   console.log(
