@@ -53,6 +53,10 @@ export const login_validator = async (data) => {
     errors.message = "User Not Found on given email";
   }
 
+  if (!user?.active) {
+    errors.message = "User is deactiated by admin";
+  }
+
   if (email && !validator.isEmail(email)) {
     errors.email = "Email Not Valid";
   }

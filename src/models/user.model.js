@@ -12,6 +12,13 @@ const userSchema = mongoose.Schema(
     user_type: { type: String, enum: ["parent", "individual", "tutor"] },
     otp: { type: Number },
     is_profile_completed: { type: Boolean, default: false },
+    register_type: {
+      type: String,
+      enum: ["local", "google", "facebook"],
+      default: "local",
+    },
+    socialId: { type: String },
+    active: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

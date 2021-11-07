@@ -30,6 +30,8 @@ export const sign_up = async (req, res, next) => {
       last_name,
       email: email.toLowerCase(),
       password,
+      register_type: "local",
+      active: true,
     });
 
     if (user_type === "tutor") {
@@ -58,7 +60,7 @@ export const sign_up = async (req, res, next) => {
 // ---------------------------------------------------------------
 export const login = async (req, res, next) => {
   try {
-    const { user_type, email, password } = req.body;
+    const { email } = req.body;
 
     const { isValid, errors } = await login_validator(req.body);
 
@@ -69,6 +71,59 @@ export const login = async (req, res, next) => {
     const user = await UserModel.findOne({
       email: email.toLowerCase(),
     });
+
+    const token = user.getJwtToken();
+
+    res.status(200).json({ ...user.toObject(), token });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- SOCIAL LOGIN -----------------------------
+// ---------------------------------------------------------------
+export const social_login = async (req, res, next) => {
+  try {
+    const { name, user_type, email, socialId, url, type } = req.body;
+
+    const userExit = await UserModel.findOne({
+      email: email.toLowerCase(),
+    });
+
+    // if user exit
+    if (userExit) {
+      const token = userExit.getJwtToken();
+      return res.status(200).json({
+        ...user.toObject(),
+        token,
+      });
+    }
+
+    // if user don't exit
+
+    const user = await UserModel.create({
+      user_type,
+      first_name: name,
+      last_name: name,
+      email: email.toLowerCase(),
+      // password,
+      register_type: type,
+      active: true,
+    });
+
+    if (user_type === "tutor") {
+      await TutorModel.create({
+        user_id: user?._id,
+        email,
+      });
+    } else {
+      await ParentModel.create({
+        user_id: user?._id,
+        type: user_type,
+        email,
+      });
+    }
 
     const token = user.getJwtToken();
 
