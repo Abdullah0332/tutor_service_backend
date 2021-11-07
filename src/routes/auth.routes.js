@@ -9,6 +9,7 @@ import {
   forgot_password,
   otp_verify,
   reset_password,
+  refresh_token,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/me", auth, me);
 router.put("/forgot-password", sanitizeData, forgot_password);
 router.put("/otp-verify", sanitizeData, otp_verify);
 router.put("/reset-password", sanitizeData, reset_password);
+router.get("/refresh-token", auth, refresh_token);
 
 export default router;

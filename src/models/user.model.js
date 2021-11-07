@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema(
     password: { type: String },
     user_type: { type: String, enum: ["parent", "individual", "tutor"] },
     otp: { type: Number },
+    is_profile_completed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

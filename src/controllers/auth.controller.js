@@ -184,3 +184,18 @@ export const reset_password = async (req, res, next) => {
     res.status(500).json({ message: error?.message });
   }
 };
+
+// ---------------------------------------------------------------
+// --------------------- REFRESH TOKEN -----------------------------
+// ---------------------------------------------------------------
+export const refresh_token = async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.user._id);
+
+    const token = user.getJwtToken();
+
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
