@@ -7,6 +7,7 @@ import {
   forgot_password_validation,
   otp_validation,
   reset_password_validation,
+  update_password_from_profile_validation,
 } from "../validators/auth.validations";
 import { randomOTP } from "../libraries/utils";
 import { forgot_password_email } from "../libraries/emails/email.sender";
@@ -251,6 +252,71 @@ export const refresh_token = async (req, res, next) => {
 
     res.status(200).json({ token });
   } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE PROFILE PICTURE -----------------------------
+// ---------------------------------------------------------------
+export const update_user_profile_picture = async (req, res, next) => {
+  try {
+    console.log(req.file);
+
+    await UserModel.updateOne(
+      { _id: req?.user?._id },
+      { $set: { profile_pic: req?.file?.path } }
+    );
+
+    const data = await UserModel.findById(req?.user?._id);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE PASSWORD FROM PROFILE -----------------------------
+// ---------------------------------------------------------------
+export const udpate_password_from_profile = async (req, res, next) => {
+  try {
+    const { isValid, errors } = await update_password_from_profile_validation(
+      req
+    );
+
+    if (isValid > 0) {
+      return res.status(400).json(errors);
+    }
+
+    res.status(200).json({ message: "Password Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- ADD PAYMENT METHOD -----------------------------
+// ---------------------------------------------------------------
+export const add_payment_method = async (req, res, next) => {
+  try {
+    let id = req?.user?._id;
+    const { payment_detail } = req.body;
+
+    const user = await UserModel.findById(id);
+
+    const user_profile =
+      user?.user_type === "tutor"
+        ? await TutorModel.findOne({ user_id: id })
+        : await ParentModel.findOne({ user_id: id });
+
+    user_profile?.payment_detail?.push(payment_detail);
+
+    await user_profile.save();
+
+    res.status(200).json({ message: "Payment Method Added Successfully" });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };

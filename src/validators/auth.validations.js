@@ -48,12 +48,13 @@ export const login_validator = async (data) => {
 
   // const user = await UserModel.findOne({ email: email?.toLowerCase() });
   const user = await userExit(email);
+  console.log(user);
 
-  if (!user) {
+  if (!user || user === null) {
     errors.message = "User Not Found on given email";
   }
 
-  if (!user?.active) {
+  if (user?.active === false) {
     errors.message = "User is deactiated by admin";
   }
 
@@ -178,6 +179,35 @@ export const reset_password_validation = async (data) => {
 
   if (!password) {
     errors.password = "Password is required.";
+  }
+
+  return {
+    errors,
+    isValid: Object.keys(errors).length,
+  };
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE PASSWORD BY PROFILEVALIDATIONS -----------------------------
+// ---------------------------------------------------------------
+export const update_password_from_profile_validation = async (req) => {
+  const { old_password, new_password } = req?.body;
+
+  const user = await UserModel.findById(req?.user?._id);
+
+  let errors = {};
+
+  if (old_password && new_password) {
+    const isPasswordMatched = await bcrypt.compare(old_password, user.password);
+
+    if (!isPasswordMatched) {
+      errors.message = "Old Password is not correct.";
+    }
+
+    if (isPasswordMatched) {
+      user.password = new_password;
+      await user.save();
+    }
   }
 
   return {

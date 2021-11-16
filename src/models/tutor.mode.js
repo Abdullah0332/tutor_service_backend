@@ -33,12 +33,8 @@ const tutorSchema = mongoose.Schema(
       from_age: { type: String },
       to_age: { type: String },
     },
-    class_type: { type: String, enum: ["class", "group class"] },
-    gallery: [
-      {
-        path: { type: String },
-      },
-    ],
+    class_type: { type: String, enum: ["class", "group_class"] },
+    gallery: [{ type: String }],
     pricing: {
       hourly_rate: { type: String },
       thirty_min_rate: { type: String },
@@ -49,12 +45,14 @@ const tutorSchema = mongoose.Schema(
       five_std_grp_rate: { type: String },
       seven_std_grp_rate: { type: String },
     },
-    payment_detail: {
-      name_on_card: { type: String },
-      card_number: { type: String },
-      exp_date: { type: String },
-      cvv: { type: String },
-    },
+    payment_detail: [
+      {
+        name_on_card: { type: String },
+        card_number: { type: String },
+        exp_date: { type: String },
+        cvv: { type: String },
+      },
+    ],
     bank_info: {
       SWIFT_code: { type: String },
       bank_name: { type: String },
