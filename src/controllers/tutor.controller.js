@@ -1,6 +1,7 @@
 import UserModel from "../models/user.model";
-import TutorModel from "../models/tutor.mode";
+import TutorModel from "../models/tutor.model";
 import ParentModel from "../models/parent.model";
+import APIFilter from "../libraries/apiFilter";
 
 import { update_tutor_profile_service } from "../services/tutor.service.js";
 
@@ -36,24 +37,32 @@ export const update_tutor_profile = async (req, res, next) => {
 // ---------------------------------------------------------------
 export const list_of_tutors = async (req, res, next) => {
   try {
-    const data = await TutorModel.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "user_id",
-          foreignField: "_id",
-          as: "user_profile",
-        },
-      },
-      {
-        $unwind: {
-          path: "$user_profile",
-        },
-      },
-    ]);
+    // const data = await TutorModel.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "user_id",
+    //       foreignField: "_id",
+    //       as: "user_profile",
+    //     },
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: "$user_profile",
+    //     },
+    //   },
+    // ]);
+
+    const filtered_data = await new APIFilter(
+      TutorModel.find(),
+      req.query
+    ).tutor_language();
+
+    let data = await filtered_data.document;
 
     res.status(200).json(data);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };

@@ -21,13 +21,13 @@ const tutorSchema = mongoose.Schema(
       to_year: { type: String },
       short_description: { type: String },
     },
-    teach_language: { type: String },
+    teach_language: [{ type: String }],
     teach_type: {
       type: String,
       enum: ["online", "tutor_home", "student_home"],
     },
-    main_field: { type: String },
-    you_teach: { type: String },
+    main_field: [{ type: String }],
+    you_teach: [{ type: String }],
     level_you_teach: { type: String },
     student_age_you_teach: {
       from_age: { type: String },

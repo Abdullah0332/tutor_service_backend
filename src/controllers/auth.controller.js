@@ -1,5 +1,5 @@
 import UserModel from "../models/user.model";
-import TutorModel from "../models/tutor.mode";
+import TutorModel from "../models/tutor.model";
 import ParentModel from "../models/parent.model";
 import {
   sign_up_validator,
