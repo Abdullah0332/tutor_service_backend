@@ -14,6 +14,9 @@ import {
   update_user_profile_picture,
   udpate_password_from_profile,
   add_payment_method,
+  update_payment_method,
+  remove_payment_method,
+  get_all_payment_method,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -37,6 +40,28 @@ router.put(
   auth,
   udpate_password_from_profile
 );
+
+// ---------------------------------------------------------------
+// --------------------- PAYMENT METHOD CRUD ROUTES -----------------------------
+// ---------------------------------------------------------------
 router.put("/add-payment-method", sanitizeData, auth, add_payment_method);
+router.put(
+  "/update-payment-method/:id",
+  sanitizeData,
+  auth,
+  update_payment_method
+);
+router.put(
+  "/remove-payment-method/:id",
+  sanitizeData,
+  auth,
+  remove_payment_method
+);
+router.get(
+  "/get-all-payment-method",
+  sanitizeData,
+  auth,
+  get_all_payment_method
+);
 
 export default router;

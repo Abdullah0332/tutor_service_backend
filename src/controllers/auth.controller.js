@@ -301,7 +301,7 @@ export const udpate_password_from_profile = async (req, res, next) => {
 export const add_payment_method = async (req, res, next) => {
   try {
     let id = req?.user?._id;
-    const { payment_detail } = req.body;
+    const { name_on_card, card_number, exp_date, cvv } = req.body;
 
     const user = await UserModel.findById(id);
 
@@ -310,13 +310,124 @@ export const add_payment_method = async (req, res, next) => {
         ? await TutorModel.findOne({ user_id: id })
         : await ParentModel.findOne({ user_id: id });
 
-    user_profile?.payment_detail?.push(payment_detail);
+    user_profile?.payment_detail?.push({
+      name_on_card,
+      card_number,
+      exp_date,
+      cvv,
+    });
 
     await user_profile.save();
 
     res.status(200).json({ message: "Payment Method Added Successfully" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE PAYMENT METHOD -----------------------------
+// ---------------------------------------------------------------
+export const update_payment_method = async (req, res, next) => {
+  try {
+    let { id } = req?.params;
+    const { name_on_card, card_number, exp_date, cvv } = req.body;
+
+    const user = await UserModel.findById(req?.user?._id);
+
+    user?.user_type === "tutor"
+      ? await TutorModel.updateOne(
+          { "payment_detail._id": id },
+          {
+            $set: {
+              "payment_detail.$.name_on_card": name_on_card,
+              "payment_detail.$.card_number": card_number,
+              "payment_detail.$.exp_date": exp_date,
+              "payment_detail.$.cvv": cvv,
+            },
+          }
+        )
+      : await ParentModel.updateOne(
+          { "payment_detail._id": id },
+          {
+            $set: {
+              "payment_detail.$.name_on_card": name_on_card,
+              "payment_detail.$.card_number": card_number,
+              "payment_detail.$.exp_date": exp_date,
+              "payment_detail.$.cvv": cvv,
+            },
+          }
+        );
+
+    res.status(200).json({ message: "Payment Method Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- DELETE PAYMENT METHOD -----------------------------
+// ---------------------------------------------------------------
+export const remove_payment_method = async (req, res, next) => {
+  try {
+    let { id } = req?.params;
+
+    const user = await UserModel.findById(req?.user?._id);
+
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found!!!" });
+    }
+
+    const user_detail =
+      user?.user_type === "tutor"
+        ? await TutorModel.findOne({ user_id: req?.user?._id })
+        : await ParentModel.findOne({ user_id: req?.user?._id });
+
+    if (!user_detail) {
+      return res
+        .status(400)
+        .json({ message: `${user?.user_type} Detail Not Found!!!` });
+    }
+
+    const updated_user_detail = user_detail.payment_detail.filter(
+      (payment) => payment?._id.toString() !== id.toString()
+    );
+    user_detail.payment_detail = updated_user_detail;
+    await user_detail.save();
+
+    res.status(200).json({ message: "Payment Method Removed Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- GET ALL PAYMENT METHOD -----------------------------
+// ---------------------------------------------------------------
+export const get_all_payment_method = async (req, res, next) => {
+  try {
+    let { id } = req?.params;
+
+    const user = await UserModel.findById(req?.user?._id);
+
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found!!!" });
+    }
+
+    const user_detail =
+      user?.user_type === "tutor"
+        ? await TutorModel.findOne({ user_id: req?.user?._id })
+        : await ParentModel.findOne({ user_id: req?.user?._id });
+
+    if (!user_detail) {
+      return res
+        .status(400)
+        .json({ message: `${user?.user_type} Detail Not Found!!!` });
+    }
+
+    res.status(200).json({ payment_detail: user_detail?.payment_detail });
+  } catch (error) {
     res.status(500).json({ message: error?.message });
   }
 };
