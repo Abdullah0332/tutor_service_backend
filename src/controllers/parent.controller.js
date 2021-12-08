@@ -43,7 +43,7 @@ export const add_kid = async (req, res, next) => {
     if (!parent) {
       return res.status(500).json({ message: "Parent Not Found!!!" });
     }
-
+    console.log(req?.file);
     parent?.kids.push({
       first_name,
       last_name,

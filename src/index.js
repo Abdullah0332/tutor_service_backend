@@ -4,6 +4,7 @@ import dbConnection from "./db/connection.js";
 import morgan from "morgan";
 import chalk from "chalk";
 import bodyParser from "body-parser";
+import path from "path";
 
 import apiRouter from "./routes/routes.js";
 
@@ -18,6 +19,9 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/api", apiRouter);
+
+// path for images
+app.use("/src/data", express.static(path.join(__dirname, "data")));
 
 app.use("/", (req, res, next) => {
   res.send("Backend Running.");
