@@ -52,6 +52,7 @@ const tutorSchema = mongoose.Schema(
       three_std_grp_rate: { type: String },
       five_std_grp_rate: { type: String },
       seven_std_grp_rate: { type: String },
+      offer_demo: { type: Boolean },
     },
     payment_detail: [
       {
