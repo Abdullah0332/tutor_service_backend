@@ -28,10 +28,11 @@ const tutorSchema = mongoose.Schema(
       },
     ],
     teach_language: [{ type: String }],
-    teach_type: {
-      type: String,
-      enum: ["online", "tutor_home", "student_home"],
-    },
+    // teach_type: {
+    //   type: String,
+    //   enum: ["online", "tutor_home", "student_home"],
+    // },
+    teach_type: [{ type: String }],
     main_field: { type: String },
     you_teach: [{ type: String }],
     level_you_teach: [{ type: String }],
