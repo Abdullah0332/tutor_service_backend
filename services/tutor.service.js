@@ -23,7 +23,7 @@ exports.update_tutor_profile_service = async (req) => {
     bank_info,
     schedule,
   } = req?.body;
-
+  console.log(req.body);
   const update_tutor_object = {};
   const update_user_object = {};
 

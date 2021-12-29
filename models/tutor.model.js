@@ -42,7 +42,8 @@ const tutorSchema = mongoose.Schema(
         to_age: { type: String },
       },
     ],
-    class_type: { type: String, enum: ["class", "group_class"] },
+    // class_type: { type: String, enum: ["class", "group_class"] },s
+    class_type: [{ type: String }],
     gallery: [{ type: String }],
     pricing: {
       hourly_rate: { type: String },
