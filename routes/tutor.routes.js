@@ -18,7 +18,7 @@ router.put(
   "/update-profile",
   sanitizeData,
   auth,
-  file.array("gallery", "30"),
+  file.any("gallery", "30"),
   update_tutor_profile
 );
 
