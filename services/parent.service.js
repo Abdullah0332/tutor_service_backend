@@ -26,6 +26,7 @@ exports.update_parent_profile_service = async (req) => {
   if (email) {
     update_parent_object.email = email;
     update_user_object.email = email;
+    update_user_object.is_profile_completed = true;
   }
   if (phone_number) {
     update_parent_object.phone_number = phone_number;

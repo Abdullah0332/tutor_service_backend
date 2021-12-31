@@ -36,6 +36,7 @@ exports.update_tutor_profile_service = async (req) => {
   if (email) {
     update_tutor_object.email = email;
     update_user_object.email = email;
+    update_user_object.is_profile_completed = true;
   }
   if (phone_number) {
     update_tutor_object.phone_number = phone_number;
