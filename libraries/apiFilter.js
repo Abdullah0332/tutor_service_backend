@@ -39,7 +39,6 @@ class APIFilter {
         $options: "i",
       },
     };
-    console.log(keywords);
     this.document = this.document.find({ ...keywords });
     return this;
   }

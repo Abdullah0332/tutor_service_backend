@@ -86,6 +86,50 @@ exports.login = async (req, res, next) => {
 // ---------------------------------------------------------------
 // --------------------- SOCIAL LOGIN -----------------------------
 // ---------------------------------------------------------------
+exports.socialLogin = async (req, res, next) => {
+  try {
+    const { name, email, url, type, user_type } = req.body;
+
+    const user = await UserModel.findOne({
+      email: email.toLowerCase(),
+    });
+
+    if (user) {
+      const token = user.getJwtToken();
+      return res.status(200).json({ ...user.toObject(), token });
+    } else {
+      const newUser = await UserModel.create({
+        user_type,
+        first_name: name,
+        email: email.toLowerCase(),
+        register_type: type,
+        active: true,
+        profile_pic: url,
+      });
+      if (user_type === "tutor") {
+        await TutorModel.create({
+          user_id: user?._id,
+          email,
+        });
+      } else {
+        await ParentModel.create({
+          user_id: user?._id,
+          type: user_type,
+          email,
+        });
+      }
+
+      const token = newUser.getJwtToken();
+      return res.status(201).json({ ...newUser.toObject(), token });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- SOCIAL LOGIN -----------------------------
+// ---------------------------------------------------------------
 exports.social_login = async (req, res, next) => {
   try {
     const { name, user_type, email, socialId, url, type } = req.body;
