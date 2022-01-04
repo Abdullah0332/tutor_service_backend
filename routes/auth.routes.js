@@ -17,11 +17,13 @@ const {
   update_payment_method,
   remove_payment_method,
   get_all_payment_method,
+  socialLogin,
 } = require("../controllers/auth.controller.js");
 
 const router = express.Router();
 
 router.post("/sign-up", sanitizeData, sign_up);
+router.post("/social-login", auth, socialLogin);
 router.post("/login", sanitizeData, login);
 router.get("/me", auth, me);
 router.put("/forgot-password", sanitizeData, forgot_password);
