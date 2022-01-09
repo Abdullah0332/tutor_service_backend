@@ -44,14 +44,14 @@ exports.add_kid = async (req, res, next) => {
     if (!parent) {
       return res.status(500).json({ message: "Parent Not Found!!!" });
     }
-    console.log(req?.file);
+
     parent?.kids.push({
       first_name,
       last_name,
       age,
       class_name,
       gender,
-      profile_picture: req?.file.path,
+      profile_picture: req?.file?.path,
     });
 
     await parent.save();
