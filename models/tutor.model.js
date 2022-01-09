@@ -56,14 +56,13 @@ const tutorSchema = mongoose.Schema(
       seven_std_grp_rate: { type: String },
       offer_demo: { type: Boolean },
     },
-    payment_detail: [
-      {
-        name_on_card: { type: String },
-        card_number: { type: String },
-        exp_date: { type: String },
-        cvv: { type: String },
-      },
-    ],
+    payment_detail: {
+      name_on_card: { type: String },
+      card_number: { type: String },
+      exp_date: { type: String },
+      cvv: { type: String },
+    },
+
     bank_info: {
       SWIFT_code: { type: String },
       bank_name: { type: String },

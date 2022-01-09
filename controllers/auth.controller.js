@@ -351,19 +351,27 @@ exports.add_payment_method = async (req, res, next) => {
 
     const user = await UserModel.findById(id);
 
-    const user_profile =
-      user?.user_type === "tutor"
-        ? await TutorModel.findOne({ user_id: id })
-        : await ParentModel.findOne({ user_id: id });
+    if (user?.user_type === "tutor") {
+      const tutor_profile = await TutorModel.findOne({ user_id: id });
+      tutor_profile.payment_detail = {
+        name_on_card,
+        card_number,
+        exp_date,
+        cvv,
+      };
+      await tutor_profile.save();
+    } else {
+      const user_profile = await ParentModel.findOne({ user_id: id });
 
-    user_profile?.payment_detail?.push({
-      name_on_card,
-      card_number,
-      exp_date,
-      cvv,
-    });
+      user_profile?.payment_detail?.push({
+        name_on_card,
+        card_number,
+        exp_date,
+        cvv,
+      });
 
-    await user_profile.save();
+      await user_profile.save();
+    }
 
     res.status(200).json({ message: "Payment Method Added Successfully" });
   } catch (error) {
