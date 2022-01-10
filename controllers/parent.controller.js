@@ -40,6 +40,7 @@ exports.add_kid = async (req, res, next) => {
     const { first_name, last_name, age, class_name, gender } = req.body;
 
     const parent = await ParentModel.findOne({ user_id: req?.user?._id });
+    const user = await UserModel.findById(req?.user?._id);
 
     if (!parent) {
       return res.status(500).json({ message: "Parent Not Found!!!" });
@@ -54,6 +55,8 @@ exports.add_kid = async (req, res, next) => {
       profile_picture: req?.file?.path,
     });
 
+    user.is_profile_completed = true;
+    await user.save();
     await parent.save();
 
     res.status(200).json({ message: "Kid Add Successfully!!!" });

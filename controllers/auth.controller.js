@@ -77,7 +77,14 @@ exports.login = async (req, res, next) => {
 
     const token = user.getJwtToken();
 
-    res.status(200).json({ ...user.toObject(), token });
+    let profile;
+    if (user?.user_type === "tutor") {
+      profile = await TutorModel.findOne({ user_id: user._id });
+    } else {
+      profile = await ParentModel.findOne({ user_id: user._id });
+    }
+
+    res.status(200).json({ ...user.toObject(), token, profile });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
@@ -122,59 +129,6 @@ exports.socialLogin = async (req, res, next) => {
       const token = newUser.getJwtToken();
       return res.status(201).json({ ...newUser.toObject(), token });
     }
-  } catch (error) {
-    res.status(500).json({ message: error?.message });
-  }
-};
-
-// ---------------------------------------------------------------
-// --------------------- SOCIAL LOGIN -----------------------------
-// ---------------------------------------------------------------
-exports.social_login = async (req, res, next) => {
-  try {
-    const { name, user_type, email, socialId, url, type } = req.body;
-
-    const userExit = await UserModel.findOne({
-      email: email.toLowerCase(),
-    });
-
-    // if user exit
-    if (userExit) {
-      const token = userExit.getJwtToken();
-      return res.status(200).json({
-        ...user.toObject(),
-        token,
-      });
-    }
-
-    // if user don't exit
-
-    const user = await UserModel.create({
-      user_type,
-      first_name: name,
-      last_name: name,
-      email: email.toLowerCase(),
-      // password,
-      register_type: type,
-      active: true,
-    });
-
-    if (user_type === "tutor") {
-      await TutorModel.create({
-        user_id: user?._id,
-        email,
-      });
-    } else {
-      await ParentModel.create({
-        user_id: user?._id,
-        type: user_type,
-        email,
-      });
-    }
-
-    const token = user.getJwtToken();
-
-    res.status(200).json({ ...user.toObject(), token });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
