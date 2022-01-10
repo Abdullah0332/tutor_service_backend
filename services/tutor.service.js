@@ -88,9 +88,6 @@ exports.update_tutor_profile_service = async (req) => {
   if (schedule) {
     update_tutor_object.schedule = schedule;
   }
-  if (bank_info) {
-    update_tutor_object.bank_info = bank_info;
-  }
   if (req?.files) {
     let images_path = req.files.map(({ path }) => path);
     update_tutor_object.gallery = images_path;
