@@ -31,7 +31,7 @@ exports.all_users_by_status = async (req, res, next) => {
           },
         },
       ],
-    });
+    }).sort({ createdAt: -1 });
 
     res.status(200).json(data);
   } catch (error) {
@@ -71,7 +71,7 @@ exports.update_admin_password = async (req, res, next) => {
 exports.update_admin_profile = async (req, res, next) => {
   try {
     const { first_name, last_name } = req.body;
-
+    console.log(req.body);
     let user_object = {};
     if (first_name) {
       user_object.first_name = first_name;
@@ -81,9 +81,25 @@ exports.update_admin_profile = async (req, res, next) => {
       user_object.last_name = last_name;
     }
 
+    if (req?.file) {
+      user_object.profile_pic = req?.file?.path;
+    }
+
     await UserModel.updateOne({ _id: req?.user?.id }, { $set: user_object });
 
     res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+exports.counts = async (req, res, next) => {
+  try {
+    let parents = await UserModel.countDocuments({
+      user_type: { $in: ["parent", "individual"] },
+    });
+    let tutors = await UserModel.countDocuments({ user_type: "tutor" });
+    res.status(200).json({ parents, tutors });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
