@@ -42,7 +42,8 @@ exports.sign_up = async (req, res, next) => {
         user_id: user?._id,
         email,
       });
-    } else {
+    }
+    if (user_type === "parent") {
       await ParentModel.create({
         user_id: user?._id,
         type: user_type,
@@ -75,12 +76,16 @@ exports.login = async (req, res, next) => {
       email: email.toLowerCase(),
     });
 
+    if (user?.status === "blocked")
+      return res.status(404).json({ message: "User is blocked by admin." });
+
     const token = user.getJwtToken();
 
     let profile;
     if (user?.user_type === "tutor") {
       profile = await TutorModel.findOne({ user_id: user._id });
-    } else {
+    }
+    if (user?.user_type === "parent") {
       profile = await ParentModel.findOne({ user_id: user._id });
     }
 

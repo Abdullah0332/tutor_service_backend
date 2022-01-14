@@ -48,7 +48,6 @@ exports.login_validator = async (data) => {
 
   // const user = await UserModel.findOne({ email: email?.toLowerCase() });
   const user = await userExit(email);
-  console.log(user);
 
   if (!user || user === null) {
     errors.message = "User Not Found on given email";

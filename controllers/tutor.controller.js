@@ -54,7 +54,10 @@ exports.list_of_tutors = async (req, res, next) => {
     //   },
     // ]);
 
-    const filtered_data = await new APIFilter(TutorModel.find(), req.query)
+    const filtered_data = await new APIFilter(
+      TutorModel.find().populate("user_id"),
+      req.query
+    )
       .tutor_language()
       .main_field()
       .level_you_teach()

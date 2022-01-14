@@ -10,7 +10,10 @@ const userSchema = mongoose.Schema(
     email: { type: String },
     password: { type: String },
     profile_pic: { type: String, default: "" },
-    user_type: { type: String, enum: ["parent", "individual", "tutor"] },
+    user_type: {
+      type: String,
+      enum: ["parent", "individual", "tutor", "admin"],
+    },
     otp: { type: Number },
     is_profile_completed: { type: Boolean, default: false },
     register_type: {
