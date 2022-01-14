@@ -24,7 +24,7 @@ exports.sign_up = async (req, res, next) => {
     const { isValid, errors } = await sign_up_validator(req.body);
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     const user = await UserModel.create({
@@ -69,7 +69,7 @@ exports.login = async (req, res, next) => {
     const { isValid, errors } = await login_validator(req.body);
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     const user = await UserModel.findOne({
@@ -168,7 +168,7 @@ exports.forgot_password = async (req, res, next) => {
     const { isValid, errors } = await forgot_password_validation(req.body);
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     const otp = await randomOTP();
@@ -205,7 +205,7 @@ exports.otp_verify = async (req, res, next) => {
     const { isValid, errors } = await otp_validation(req.body);
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     const user = await UserModel.findOne({ email: email.toLowerCase(), otp });
@@ -231,7 +231,7 @@ exports.reset_password = async (req, res, next) => {
     const { isValid, errors } = await reset_password_validation(req.body);
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     const user = await UserModel.findOne({ email: email.toLowerCase() });
@@ -291,7 +291,7 @@ exports.udpate_password_from_profile = async (req, res, next) => {
     );
 
     if (isValid > 0) {
-      return res.status(400).json(errors);
+      return res.status(401).json(errors);
     }
 
     res.status(200).json({ message: "Password Updated Successfully" });
@@ -389,7 +389,7 @@ exports.remove_payment_method = async (req, res, next) => {
     const user = await UserModel.findById(req?.user?._id);
 
     if (!user) {
-      return res.status(400).json({ message: "User Not Found!!!" });
+      return res.status(401).json({ message: "User Not Found!!!" });
     }
 
     const user_detail =
@@ -399,7 +399,7 @@ exports.remove_payment_method = async (req, res, next) => {
 
     if (!user_detail) {
       return res
-        .status(400)
+        .status(401)
         .json({ message: `${user?.user_type} Detail Not Found!!!` });
     }
 
@@ -425,7 +425,7 @@ exports.get_all_payment_method = async (req, res, next) => {
     const user = await UserModel.findById(req?.user?._id);
 
     if (!user) {
-      return res.status(400).json({ message: "User Not Found!!!" });
+      return res.status(404).json({ message: "User Not Found!!!" });
     }
 
     const user_detail =
@@ -435,7 +435,7 @@ exports.get_all_payment_method = async (req, res, next) => {
 
     if (!user_detail) {
       return res
-        .status(400)
+        .status(404)
         .json({ message: `${user?.user_type} Detail Not Found!!!` });
     }
 

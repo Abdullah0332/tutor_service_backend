@@ -75,7 +75,7 @@ exports.remove_kid = async (req, res, next) => {
     const parent = await ParentModel.findOne({ user_id: req?.user?._id });
 
     if (!parent) {
-      return res.status(400).json({ message: "Parent Not Found!!!" });
+      return res.status(404).json({ message: "Parent Not Found!!!" });
     }
 
     const updated_kids = parent.kids.filter(

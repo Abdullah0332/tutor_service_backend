@@ -52,3 +52,39 @@ exports.get_single_user = async (req, res, next) => {
     res.status(500).json({ message: error?.message });
   }
 };
+
+exports.update_admin_password = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+
+    const user = await UserModel.findById(req?.user?._id);
+
+    user.password = password;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+exports.update_admin_profile = async (req, res, next) => {
+  try {
+    const { first_name, last_name } = req.body;
+
+    let user_object = {};
+    if (first_name) {
+      user_object.first_name = first_name;
+    }
+
+    if (last_name) {
+      user_object.last_name = last_name;
+    }
+
+    await UserModel.updateOne({ _id: req?.user?.id }, { $set: user_object });
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
