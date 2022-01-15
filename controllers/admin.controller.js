@@ -45,9 +45,9 @@ exports.get_single_user = async (req, res, next) => {
     const user = await UserModel.findById(id);
     const data =
       user?.user_type === "tutor"
-        ? await TutorModel.findOne({ user_id: id }).populate("user_id")
-        : await ParentModel.findOne({ user_id: id }).populate("user_id");
-    res.status(200).json(data);
+        ? await TutorModel.findOne({ user_id: id })
+        : await ParentModel.findOne({ user_id: id });
+    res.status(200).json({ ...user.toObject(), data });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
