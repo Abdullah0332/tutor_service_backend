@@ -4,15 +4,16 @@ class APIFilter {
     this.query = query;
   }
 
-  tutor_language() {
-    const keywords = this.query.tutor_language && {
-      teach_language: { $in: this.query.tutor_language },
+  teach_language() {
+    const keywords = this.query.teach_language && {
+      teach_language: { $in: this.query.teach_language },
     };
     this.document = this.document.find({ ...keywords });
     return this;
   }
 
   main_field() {
+    console.log(this.query)
     const keywords = this.query.main_field && {
       main_field: {
         $regex: this.query.main_field,
@@ -33,12 +34,30 @@ class APIFilter {
   }
 
   location() {
-    const keywords = this.query.location && {
+    const keywords = this.query.classLocation && {
       location: {
-        $regex: this.query.location,
+        $regex: this.query.classLocation,
         $options: "i",
       },
     };
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
+
+  age() {
+    const keywords = this.query.age && {
+
+      $and: [{
+        "student_age_you_teach.from_age": {
+          $gte: this.query.age
+        }
+      }, {
+        "student_age_you_teach.to_age": {
+          $lte: this.query.age
+        }
+      }]
+
+    }
     this.document = this.document.find({ ...keywords });
     return this;
   }
