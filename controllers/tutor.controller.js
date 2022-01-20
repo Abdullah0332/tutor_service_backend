@@ -58,11 +58,15 @@ exports.list_of_tutors = async (req, res, next) => {
       TutorModel.find().populate("user_id"),
       req.query
     )
+      .querySearch()
       .teach_language()
+      .gender()
       .main_field()
+      .sub_field()
       .level_you_teach()
       .location()
-      .age();
+      .age()
+      .classLocation()
 
     let data = await filtered_data.document;
 

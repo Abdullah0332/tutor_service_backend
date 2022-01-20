@@ -4,6 +4,17 @@ class APIFilter {
     this.query = query;
   }
 
+  querySearch() {
+    const keywords = this.query.query && {
+      main_field: {
+        $regex: this.query.query,
+        $options: "i",
+      },
+    };
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
+
   teach_language() {
     const keywords = this.query.teach_language && {
       teach_language: { $in: this.query.teach_language },
@@ -13,7 +24,6 @@ class APIFilter {
   }
 
   main_field() {
-    console.log(this.query)
     const keywords = this.query.main_field && {
       main_field: {
         $regex: this.query.main_field,
@@ -21,6 +31,14 @@ class APIFilter {
       },
     };
 
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
+
+  sub_field() {
+    const keywords = this.query.sub_field && {
+      you_teach: { $in: this.query.sub_field },
+    };
     this.document = this.document.find({ ...keywords });
     return this;
   }
@@ -34,9 +52,20 @@ class APIFilter {
   }
 
   location() {
-    const keywords = this.query.classLocation && {
+    const keywords = this.query.location && {
       location: {
-        $regex: this.query.classLocation,
+        $regex: this.query.location,
+        $options: "i",
+      },
+    };
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
+
+  gender() {
+    const keywords = this.query.gender && {
+      gender: {
+        $regex: this.query.gender,
         $options: "i",
       },
     };
@@ -46,18 +75,27 @@ class APIFilter {
 
   age() {
     const keywords = this.query.age && {
+      $or: [
+        {
+          "student_age_you_teach.from_age": {
+            $gte: this.query.age,
+          },
+        },
+        {
+          "student_age_you_teach.to_age": {
+            $lte: this.query.age,
+          },
+        },
+      ],
+    };
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
 
-      $and: [{
-        "student_age_you_teach.from_age": {
-          $gte: this.query.age
-        }
-      }, {
-        "student_age_you_teach.to_age": {
-          $lte: this.query.age
-        }
-      }]
-
-    }
+  classLocation() {
+    const keywords = this.query.classLocation && {
+      teach_type: { $in: this.query.classLocation },
+    };
     this.document = this.document.find({ ...keywords });
     return this;
   }

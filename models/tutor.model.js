@@ -7,6 +7,7 @@ const tutorSchema = mongoose.Schema(
     about_you: { type: String },
     email: { type: String },
     phone_number: { type: String },
+    gender: { type: String },
     location: { type: String },
     education: [
       {
