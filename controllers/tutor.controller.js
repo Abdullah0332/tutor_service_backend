@@ -67,6 +67,7 @@ exports.list_of_tutors = async (req, res, next) => {
       .location()
       .age()
       .classLocation()
+      .price()
 
     let data = await filtered_data.document;
 

@@ -75,19 +75,11 @@ class APIFilter {
 
   age() {
     const keywords = this.query.age && {
-      $or: [
-        {
-          "student_age_you_teach.from_age": {
-            $gte: this.query.age,
-          },
-        },
-        {
-          "student_age_you_teach.to_age": {
-            $lte: this.query.age,
-          },
-        },
-      ],
+      "student_age_you_teach.from_age": {
+        $gte: Number(this.query.age),
+      },
     };
+    console.log(Number(this.query.age))
     this.document = this.document.find({ ...keywords });
     return this;
   }
@@ -96,6 +88,14 @@ class APIFilter {
     const keywords = this.query.classLocation && {
       teach_type: { $in: this.query.classLocation },
     };
+    this.document = this.document.find({ ...keywords });
+    return this;
+  }
+
+  price() {
+    const keywords = this.query.priceRange && this.query?.priceRange?.length > 0 && {
+      "pricing.hourly_rate": { $gte: Number(this.query?.priceRange[0]), $lte: Number(this.query?.priceRange[1]) }
+    }
     this.document = this.document.find({ ...keywords });
     return this;
   }

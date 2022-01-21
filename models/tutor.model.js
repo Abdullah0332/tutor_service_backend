@@ -39,22 +39,22 @@ const tutorSchema = mongoose.Schema(
     level_you_teach: [{ type: String }],
     student_age_you_teach: [
       {
-        from_age: { type: String },
-        to_age: { type: String },
+        from_age: { type: Number },
+        to_age: { type: Number },
       },
     ],
     // class_type: { type: String, enum: ["class", "group_class"] },s
     class_type: [{ type: String }],
     gallery: [{ type: String }],
     pricing: {
-      hourly_rate: { type: String },
-      thirty_min_rate: { type: String },
-      weekly_pkg_rate: { type: String },
-      fortnightly_pkg_rate: { type: String },
-      monthly_pkg_rate: { type: String },
-      three_std_grp_rate: { type: String },
-      five_std_grp_rate: { type: String },
-      seven_std_grp_rate: { type: String },
+      hourly_rate: { type: Number },
+      thirty_min_rate: { type: Number },
+      weekly_pkg_rate: { type: Number },
+      fortnightly_pkg_rate: { type: Number },
+      monthly_pkg_rate: { type: Number },
+      three_std_grp_rate: { type: Number },
+      five_std_grp_rate: { type: Number },
+      seven_std_grp_rate: { type: Number },
       offer_demo: { type: Boolean },
     },
     payment_detail: {
