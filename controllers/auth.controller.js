@@ -40,14 +40,14 @@ exports.sign_up = async (req, res, next) => {
     if (user_type === "tutor") {
       await TutorModel.create({
         user_id: user?._id,
-        email,
+        email: email.toLowerCase(),
       });
     }
     if (user_type === "parent") {
       await ParentModel.create({
         user_id: user?._id,
         type: user_type,
-        email,
+        email: email.toLowerCase(),
       });
     }
 
@@ -351,27 +351,27 @@ exports.update_payment_method = async (req, res, next) => {
 
     user?.user_type === "tutor"
       ? await TutorModel.updateOne(
-          { "payment_detail._id": id },
-          {
-            $set: {
-              "payment_detail.$.name_on_card": name_on_card,
-              "payment_detail.$.card_number": card_number,
-              "payment_detail.$.exp_date": exp_date,
-              "payment_detail.$.cvv": cvv,
-            },
-          }
-        )
+        { "payment_detail._id": id },
+        {
+          $set: {
+            "payment_detail.$.name_on_card": name_on_card,
+            "payment_detail.$.card_number": card_number,
+            "payment_detail.$.exp_date": exp_date,
+            "payment_detail.$.cvv": cvv,
+          },
+        }
+      )
       : await ParentModel.updateOne(
-          { "payment_detail._id": id },
-          {
-            $set: {
-              "payment_detail.$.name_on_card": name_on_card,
-              "payment_detail.$.card_number": card_number,
-              "payment_detail.$.exp_date": exp_date,
-              "payment_detail.$.cvv": cvv,
-            },
-          }
-        );
+        { "payment_detail._id": id },
+        {
+          $set: {
+            "payment_detail.$.name_on_card": name_on_card,
+            "payment_detail.$.card_number": card_number,
+            "payment_detail.$.exp_date": exp_date,
+            "payment_detail.$.cvv": cvv,
+          },
+        }
+      );
 
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
