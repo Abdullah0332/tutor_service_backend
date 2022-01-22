@@ -67,13 +67,46 @@ exports.list_of_tutors = async (req, res, next) => {
       .location()
       .age()
       .classLocation()
-      .price()
+      .price();
 
     let data = await filtered_data.document;
 
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE TUTOR SCHEDULE -----------------------------
+// ---------------------------------------------------------------
+exports.update_tutor_schedule = async (req, res, next) => {
+  try {
+    const { soltId, timeId } = req.body
+    const tutor = await TutorModel.findOne({
+      user_id: req?.params?.id,
+    });
+    const updated_availability_time = tutor.schedule.availability_time.filter(availabile => {
+      if (availabile._id.toString() === soltId.toString()) {
+        availabile.timings.filter(time => {
+          if (time._id.toString() === timeId.toString()) {
+            time.parent_id = req?.user?._id
+          }
+          return time
+        })
+        availabile.booked = true
+      }
+      return availabile
+    })
+    tutor.schedule.availability_time = updated_availability_time
+    tutor.save()
+
+    const updated_tutor_profile = await TutorModel.findOne({
+      user_id: req?.params?.id,
+    }).populate("user_id");
+    res.status(200).json(updated_tutor_profile);
+  } catch (error) {
     res.status(500).json({ message: error?.message });
   }
 };

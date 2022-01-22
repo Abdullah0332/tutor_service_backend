@@ -7,6 +7,7 @@ const {
   update_tutor_profile,
   list_of_tutors,
   get_single_tutor,
+  update_tutor_schedule,
 } = require("../controllers/tutor.controller.js");
 
 const router = express.Router();
@@ -21,5 +22,7 @@ router.put(
   file.any("gallery", "30"),
   update_tutor_profile
 );
+
+router.put("/update-schedule/:id", sanitizeData, auth, update_tutor_schedule);
 
 module.exports = router;

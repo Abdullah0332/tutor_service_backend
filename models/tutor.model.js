@@ -84,10 +84,12 @@ const tutorSchema = mongoose.Schema(
           name: { type: String },
           timings: [
             {
+              parent_id: { type: mongoose.Types.ObjectId, ref: "Users" },
               start_time: { type: String },
               end_time: { type: String },
             },
           ],
+          booked: { type: Boolean, default: false },
         },
       ],
       book_class: [{ type: String }],
@@ -97,6 +99,17 @@ const tutorSchema = mongoose.Schema(
         short_notice: { type: String },
         future_book: { type: String },
       },
+    },
+    reviews: [
+      {
+        userId: { type: mongoose.Types.ObjectId, ref: "Users" },
+        rating: { type: Number },
+        comment: { type: String },
+      },
+    ],
+    rating: {
+      type: String,
+      default: 0,
     },
   },
   { timestamps: true }
