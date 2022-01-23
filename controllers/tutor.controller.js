@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
+const ClassModel = require("../models/class.model.js");
 const APIFilter = require("../libraries/apiFilter.js");
 
 const {
@@ -83,27 +84,42 @@ exports.list_of_tutors = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.update_tutor_schedule = async (req, res, next) => {
   try {
-    const { soltId, timeId } = req.body
-    const tutor = await TutorModel.findOne({
-      user_id: req?.params?.id,
-    });
-    const updated_availability_time = tutor.schedule.availability_time.filter(availabile => {
-      if (availabile._id.toString() === soltId.toString()) {
-        availabile.timings.filter(time => {
-          if (time._id.toString() === timeId.toString()) {
-            time.parent_id = req?.user?._id
-          }
-          return time
-        })
-        availabile.booked = true
+    const {
+      soltId,
+      kids,
+      user_type,
+      class_location,
+      selected_pkg,
+      no_of_booking,
+      total_price,
+    } = req.body;
+    const { id } = req.params;
+    const tutor = await TutorModel.findOne({ user_id: id });
+    const updated_availability_time = tutor.schedule.availability_time.filter(
+      (availabile) => {
+        if (availabile._id.toString() === soltId.toString()) {
+          availabile.booked = true;
+        }
+        return availabile;
       }
-      return availabile
-    })
-    tutor.schedule.availability_time = updated_availability_time
-    tutor.save()
+    );
+    tutor.schedule.availability_time = updated_availability_time;
+    tutor.save();
+
+    // Create Booking
+    const new_class = await ClassModel.create({
+      user_id: req?.user?.id,
+      tutor_id: req?.params?.id,
+      kids,
+      user_type,
+      class_location,
+      selected_pkg,
+      no_of_booking,
+      total_price,
+    });
 
     const updated_tutor_profile = await TutorModel.findOne({
-      user_id: req?.params?.id,
+      user_id: id,
     }).populate("user_id");
     res.status(200).json(updated_tutor_profile);
   } catch (error) {

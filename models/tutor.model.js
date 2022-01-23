@@ -84,7 +84,6 @@ const tutorSchema = mongoose.Schema(
           name: { type: String },
           timings: [
             {
-              parent_id: { type: mongoose.Types.ObjectId, ref: "Users" },
               start_time: { type: String },
               end_time: { type: String },
             },
