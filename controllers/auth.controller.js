@@ -84,12 +84,13 @@ exports.login = async (req, res, next) => {
     let profile;
     if (user?.user_type === "tutor") {
       profile = await TutorModel.findOne({ user_id: user._id });
-    }
-    if (user?.user_type === "parent" || "individual") {
+      return res.status(200).json({ ...user.toObject(), token, profile });
+    } else if (user?.user_type === "parent" || "individual") {
       profile = await ParentModel.findOne({ user_id: user._id });
+      return res.status(200).json({ ...user.toObject(), token });
+    } else {
+      res.status(200).json({ ...user.toObject(), token, profile });
     }
-
-    res.status(200).json({ ...user.toObject(), token, profile });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
