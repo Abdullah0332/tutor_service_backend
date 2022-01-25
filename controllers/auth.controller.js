@@ -43,7 +43,7 @@ exports.sign_up = async (req, res, next) => {
         email: email.toLowerCase(),
       });
     }
-    if (user_type === "parent") {
+    if (user_type === "parent" || "individual") {
       await ParentModel.create({
         user_id: user?._id,
         type: user_type,
@@ -85,7 +85,7 @@ exports.login = async (req, res, next) => {
     if (user?.user_type === "tutor") {
       profile = await TutorModel.findOne({ user_id: user._id });
     }
-    if (user?.user_type === "parent") {
+    if (user?.user_type === "parent" || "individual") {
       profile = await ParentModel.findOne({ user_id: user._id });
     }
 
