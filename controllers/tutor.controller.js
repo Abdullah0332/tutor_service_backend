@@ -91,6 +91,8 @@ exports.update_tutor_schedule = async (req, res, next) => {
       class_location,
       selected_pkg,
       no_of_booking,
+      price,
+      travel_price,
       total_price,
     } = req.body;
     const { id } = req.params;
@@ -115,6 +117,8 @@ exports.update_tutor_schedule = async (req, res, next) => {
       class_location,
       selected_pkg,
       no_of_booking,
+      price,
+      travel_price,
       total_price,
     });
 
@@ -134,6 +138,49 @@ exports.get_single_tutor = async (req, res, next) => {
   try {
     const data = await TutorModel.findOne({
       user_id: req?.params?.id,
+    }).populate("user_id");
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPLOAD ID OR IQAMA VERIFICATION -----------------------------
+// ---------------------------------------------------------------
+exports.upload_id_iqama_verification = async (req, res, next) => {
+  try {
+    await TutorModel.updateOne({
+      user_id: req?.params?.id,
+    }, { $set: { id_iqama_verification: req.file.path } });
+
+    const data = await TutorModel.findOne({
+      user_id: req?.params?.id,
+    }).populate("user_id");
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPLOAD CERTIFICATIONS -----------------------------
+// ---------------------------------------------------------------
+exports.upload_certifications = async (req, res, next) => {
+  try {
+    const { _id } = req?.user
+    let certifications_path = req.files.map(({ path }) => path);
+    let tutor = await TutorModel.findOne({
+      user_id: _id,
+    })
+    tutor.certificates.push(...certifications_path)
+
+    await tutor.save()
+
+    const data = await TutorModel.findOne({
+      user_id: _id,
     }).populate("user_id");
 
     res.status(200).json(data);

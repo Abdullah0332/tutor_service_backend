@@ -10,6 +10,8 @@ const classSchema = mongoose.Schema(
         class_location: { type: String },
         selected_pkg: { type: Number },
         no_of_booking: { type: Number },
+        price: { type: Number },
+        travel_price: { type: Number },
         total_price: { type: Number }
     },
     { timestamps: true }

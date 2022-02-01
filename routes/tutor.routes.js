@@ -8,6 +8,8 @@ const {
   list_of_tutors,
   get_single_tutor,
   update_tutor_schedule,
+  upload_id_iqama_verification,
+  upload_certifications
 } = require("../controllers/tutor.controller.js");
 
 const router = express.Router();
@@ -24,5 +26,7 @@ router.put(
 );
 
 router.put("/update-schedule/:id", sanitizeData, auth, update_tutor_schedule);
+router.put("/upload-id-iqama-verification/:id", sanitizeData, file.single("file"), upload_id_iqama_verification);
+router.put("/upload-certifications", sanitizeData, file.any("files", "30"), auth, upload_certifications);
 
 module.exports = router;

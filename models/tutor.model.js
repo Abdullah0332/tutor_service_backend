@@ -9,6 +9,9 @@ const tutorSchema = mongoose.Schema(
     phone_number: { type: String },
     gender: { type: String },
     location: { type: String },
+    id_iqama_verification: { type: String },
+    id_iqama_verification_approved: { type: String, default: 'pending', enum: ["pending", 'approved', 'declined'] },
+    certificates: [{ type: String }],
     education: [
       {
         name_of_institution: { type: String },
@@ -36,7 +39,7 @@ const tutorSchema = mongoose.Schema(
     teach_type: [{ type: String }],
     main_field: { type: String },
     you_teach: [{ type: String }],
-    level_you_teach: [{ type: String }],
+    level_you_teach: [{ type: String, enum: ["Beginner", "Intermediate", "Advanced"] }],
     student_age_you_teach: [
       {
         from_age: { type: Number },

@@ -84,11 +84,19 @@ exports.login = async (req, res, next) => {
 
     let profile;
     if (user?.user_type === "tutor") {
+
       profile = await TutorModel.findOne({ user_id: user._id });
+      if (profile?.id_iqama_verification_approved === 'pending')
+        return res.status(404).json({ message: "Your ID and IQAMA is not Approved or Declined by Admin." });
+      if (profile?.id_iqama_verification_approved === 'declined')
+        return res.status(404).json({ message: "Your ID and IQAMA is Declined by Admin." });
       return res.status(200).json({ ...user.toObject(), token, profile });
+
     } else if (user?.user_type === "parent" || user?.user_type === "individual") {
+
       profile = await ParentModel.findOne({ user_id: user._id });
       return res.status(200).json({ ...user.toObject(), token });
+
     } else {
       res.status(200).json({ ...user.toObject(), token, profile });
     }

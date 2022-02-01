@@ -10,6 +10,9 @@ const {
   update_admin_password,
   update_admin_profile,
   counts,
+  all_unverified_id_iqama,
+  update_id_iqama_verification,
+  all_declined_id_iqama
 } = require("../controllers/admin.controller");
 
 const router = express.Router();
@@ -26,5 +29,8 @@ router.put(
   update_admin_profile
 );
 router.get("/counts", sanitizeData, auth, counts);
+router.get("/all-unverified-id-iqama", sanitizeData, auth, all_unverified_id_iqama);
+router.get("/all-declined-id-iqama", sanitizeData, auth, all_declined_id_iqama);
+router.put("/update-id-iqama-verification/:id", sanitizeData, auth, update_id_iqama_verification);
 
 module.exports = router;

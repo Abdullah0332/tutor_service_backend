@@ -9,9 +9,8 @@ exports.block_unblock_user = async (req, res, next) => {
 
     // send email
     res.status(200).json({
-      message: `User ${
-        status === "true" ? "active" : "blocked"
-      } successfully!!!`,
+      message: `User ${status === "true" ? "active" : "blocked"
+        } successfully!!!`,
     });
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -31,10 +30,50 @@ exports.all_users_by_status = async (req, res, next) => {
           },
         },
       ],
-    }).sort({ createdAt: -1 });
+    }).sort({ updatedAt: -1 });
 
     res.status(200).json(data);
   } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+exports.all_unverified_id_iqama = async (req, res, next) => {
+  try {
+    const data = await TutorModel.find({
+      id_iqama_verification_approved: "pending"
+    }).populate('user_id').sort({ updatedAt: -1 });
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+exports.update_id_iqama_verification = async (req, res, next) => {
+  try {
+    await TutorModel.updateOne({
+      user_id: req.params.id
+    }, { $set: { id_iqama_verification_approved: req.body.status } })
+
+    res.status(200).json({ message: "Verfication Updated Successfully!!!" });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+exports.all_declined_id_iqama = async (req, res, next) => {
+  try {
+    const data = await TutorModel.find({
+      id_iqama_verification_approved: "declined"
+    }).populate('user_id').sort({ updatedAt: -1 });
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error)
     res.status(500).json({ message: error?.message });
   }
 };
