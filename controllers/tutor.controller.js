@@ -56,7 +56,7 @@ exports.list_of_tutors = async (req, res, next) => {
     // ]);
 
     const filtered_data = await new APIFilter(
-      TutorModel.find().populate("user_id"),
+      TutorModel.find({ id_iqama_verification_approved: "approved" }).populate("user_id"),
       req.query
     )
       .querySearch()
@@ -74,7 +74,6 @@ exports.list_of_tutors = async (req, res, next) => {
 
     res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };

@@ -46,19 +46,24 @@ const tutorSchema = mongoose.Schema(
         to_age: { type: Number },
       },
     ],
+
     // class_type: { type: String, enum: ["class", "group_class"] },s
     class_type: [{ type: String }],
     gallery: [{ type: String }],
     pricing: {
-      hourly_rate: { type: Number },
-      thirty_min_rate: { type: Number },
-      weekly_pkg_rate: { type: Number },
-      fortnightly_pkg_rate: { type: Number },
-      monthly_pkg_rate: { type: Number },
-      three_std_grp_rate: { type: Number },
-      five_std_grp_rate: { type: Number },
-      seven_std_grp_rate: { type: Number },
-      offer_demo: { type: Boolean },
+      // hourly_rate: { type: Number },
+      // thirty_min_rate: { type: Number },
+      // weekly_pkg_rate: { type: Number },
+      // fortnightly_pkg_rate: { type: Number },
+      // monthly_pkg_rate: { type: Number },
+      // three_std_grp_rate: { type: Number },
+      // five_std_grp_rate: { type: Number },
+      // seven_std_grp_rate: { type: Number },
+      // offer_demo: { type: Boolean },
+      // 4, 8 , 12 class package 
+      four_class_rate: { type: Number },
+      eight_class_rate: { type: Number },
+      twelve_class_rate: { type: Number },
     },
     payment_detail: {
       name_on_card: { type: String },
@@ -77,7 +82,8 @@ const tutorSchema = mongoose.Schema(
       branch_on_account: { type: String },
     },
     schedule: {
-      class_time: { type: String },
+      // class_time: { type: String },
+      class_time: [{ time: { type: String }, price: { type: Number } }],
       availability_active: {
         from: { type: String },
         until: { type: String },
