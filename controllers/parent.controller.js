@@ -4,6 +4,7 @@ const ParentModel = require("../models/parent.model.js");
 const {
   update_parent_profile_service,
 } = require("../services/parent.service.js");
+const paymentModel = require("../models/payment.model.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE PARENT PROFILE -----------------------------
@@ -136,6 +137,19 @@ exports.get_all_kid = async (req, res, next) => {
     }
 
     res.status(200).json({ kids: parent?.kids });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- GET ALL PAYMENTS -----------------------------
+// ---------------------------------------------------------------
+exports.get_all_payments = async (req, res, next) => {
+  try {
+    const payments = await paymentModel.find({ user_id: req?.user?._id }).populate("user_id tutor_id class_id");
+
+    res.status(200).json(payments);
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }

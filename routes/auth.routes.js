@@ -65,4 +65,5 @@ router.get(
   auth,
   get_all_payment_method
 );
+
 module.exports = router;

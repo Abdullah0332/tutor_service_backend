@@ -1,5 +1,6 @@
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path");
 
 var dir = "./data";
 
@@ -18,4 +19,13 @@ const file = multer({
   }),
 });
 
-module.exports = { file };
+const delete_file = (str) => {
+  fs.unlink(
+    path.join(__dirname, "../", str),
+    (err) => {
+      console.log(err);
+    }
+  );
+}
+
+module.exports = { file, delete_file };

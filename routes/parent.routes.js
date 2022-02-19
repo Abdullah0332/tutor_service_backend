@@ -10,6 +10,7 @@ const {
   remove_kid,
   update_kid,
   get_all_kid,
+  get_all_payments
 } = require("../controllers/parent.controller.js");
 
 const router = express.Router();
@@ -29,5 +30,7 @@ router.put(
   update_kid
 );
 router.put("/remove-kid/:id", sanitizeData, auth, remove_kid);
+
+router.get("/all-purchases", sanitizeData, auth, get_all_payments);
 
 module.exports = router;

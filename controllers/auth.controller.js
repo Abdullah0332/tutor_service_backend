@@ -455,3 +455,21 @@ exports.get_all_payment_method = async (req, res, next) => {
     res.status(500).json({ message: error?.message });
   }
 };
+
+
+// ---------------------------------------------------------------
+// --------------------- GET UPCOMMING CLASSES -----------------------------
+// ---------------------------------------------------------------
+exports.get_upcoming_classes = async (req, res, next) => {
+  try {
+    const filterDate = new Date(req.params.date);
+    console.log(filterDate);
+    const filterDay = formatDate(filterDate, "ccc");
+    console.log(filterDay)
+
+
+    res.status(200).json("data");
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};

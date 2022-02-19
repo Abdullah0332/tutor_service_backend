@@ -1,7 +1,10 @@
 const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const ClassModel = require("../models/class.model.js");
+const AnnouncementModel = require("../models/announcement.model.js");
+const PaymentModel = require("../models/payment.model");
 const APIFilter = require("../libraries/apiFilter.js");
+const moment = require("moment");
 
 const {
   update_tutor_profile_service,
@@ -119,7 +122,16 @@ exports.update_tutor_schedule = async (req, res, next) => {
       price,
       travel_price,
       total_price,
+      class_date: moment(req.body?.date).format("YYYY-MM-DD")
     });
+
+    await PaymentModel.create({
+      user_id: req?.user?.id,
+      tutor_id: req?.params?.id,
+      class_id: new_class?._id,
+      price: total_price,
+      date: new Date()
+    })
 
     const updated_tutor_profile = await TutorModel.findOne({
       user_id: id,

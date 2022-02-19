@@ -71,7 +71,6 @@ const tutorSchema = mongoose.Schema(
       exp_date: { type: String },
       cvv: { type: String },
     },
-
     bank_info: {
       SWIFT_code: { type: String },
       bank_name: { type: String },
