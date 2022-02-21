@@ -13,7 +13,8 @@ const classSchema = mongoose.Schema(
         price: { type: Number },
         travel_price: { type: Number },
         total_price: { type: Number },
-        class_date: { type: String }
+        class_date: { type: String },
+        reviewed_by: [{ type: String }]
     },
     { timestamps: true }
 );

@@ -1,5 +1,6 @@
 const ClassModel = require("../models/class.model")
 const AnnouncementModel = require("../models/announcement.model")
+const TutorModel = require("../models/tutor.model")
 const formatDate = require("date-fns/format");
 const { isBefore, isSameDay, isAfter } = require("date-fns");
 const { delete_file } = require("../middlewares/multer")
@@ -195,6 +196,45 @@ exports.delete_comment = async (req, res, next) => {
         const updated_announcement = await AnnouncementModel.findById(announcement_id).populate("user_id class_id")
 
         res.status(200).json(updated_announcement);
+    } catch (error) {
+        res.status(500).json({ message: error?.message });
+    }
+};
+
+// ---------------------------------------------------------------
+// --------------------- PLACE REVIEW -----------------------------
+// ---------------------------------------------------------------
+exports.place_review = async (req, res, next) => {
+    try {
+        const { rating, comment, class_id } = req.body;
+
+        const class_doc = await ClassModel.findById(class_id)
+        if (class_doc?.reviewed_by?.includes(req?.user?.id))
+            return res.status(404).send({ message: "This user already place review aganist this class." })
+        class_doc?.reviewed_by.push(req?.user?.id)
+        const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id })
+        let all_reviews = tutor?.reviews
+        let files = []
+        if (req?.files?.length > 0) {
+            files = req.files.map(({ path }) => path);
+        }
+        all_reviews.push({
+            class_id,
+            user_id: req?.user?._id,
+            rating,
+            comment,
+            files
+        })
+
+        tutor.no_of_review++
+        tutor.rating = tutor.reviews.reduce((acc, item) => item.rating + acc, 0) / tutor.reviews.length
+
+        await class_doc.save()
+        await tutor.save();
+
+        const updated_tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id }).populate("user_id")
+
+        res.status(200).json(updated_tutor);
     } catch (error) {
         res.status(500).json({ message: error?.message });
     }

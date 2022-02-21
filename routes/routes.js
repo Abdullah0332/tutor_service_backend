@@ -5,6 +5,7 @@ const parentRouter = require("./parent.routes.js");
 const adminRouter = require("./admin.routes.js");
 const paymentRouter = require("./payment.routes.js");
 const classRouter = require("./class.routes.js");
+const mobileRouter = require("./mobile.routes.js");
 
 const apiRouter = express.Router();
 
@@ -14,5 +15,6 @@ apiRouter.use("/parent", parentRouter);
 apiRouter.use("/admin", adminRouter);
 apiRouter.use("/payment", paymentRouter);
 apiRouter.use("/class", classRouter);
+apiRouter.use("/mobile", mobileRouter);
 
 module.exports = apiRouter;
