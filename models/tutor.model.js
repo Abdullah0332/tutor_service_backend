@@ -96,6 +96,7 @@ const tutorSchema = mongoose.Schema(
               end_time: { type: String },
             },
           ],
+          booked_slots: [{ type: Date }],
           booked: { type: Boolean, default: false },
         },
       ],

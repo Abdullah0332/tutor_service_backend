@@ -96,6 +96,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       price,
       travel_price,
       total_price,
+      slot_time,
     } = req.body;
     const { id } = req.params;
     const tutor = await TutorModel.findOne({ user_id: id });
@@ -103,6 +104,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       (availabile) => {
         if (availabile._id.toString() === soltId.toString()) {
           availabile.booked = true;
+          availabile.booked_slots.push(slot_time)
         }
         return availabile;
       }
@@ -122,6 +124,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       price,
       travel_price,
       total_price,
+      slot_time,
       class_date: moment(req.body?.date).format("YYYY-MM-DD")
     });
 

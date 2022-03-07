@@ -5,6 +5,7 @@ const classSchema = mongoose.Schema(
         user_id: { type: mongoose.Types.ObjectId, ref: "User" },
         tutor_id: { type: mongoose.Types.ObjectId, ref: "User" },
         slotId: { type: mongoose.Types.ObjectId },
+        slot_time: { type: Date },
         kids: [{ type: mongoose.Types.ObjectId }],
         user_type: { type: String, },
         class_location: { type: String },
