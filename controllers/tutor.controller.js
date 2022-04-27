@@ -32,7 +32,6 @@ exports.update_tutor_profile = async (req, res, next) => {
 
     res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };
@@ -59,7 +58,9 @@ exports.list_of_tutors = async (req, res, next) => {
     // ]);
 
     const filtered_data = await new APIFilter(
-      TutorModel.find({ id_iqama_verification_approved: "approved" }).populate("user_id"),
+      TutorModel.find({ id_iqama_verification_approved: "approved" }).populate(
+        "user_id"
+      ),
       req.query
     )
       .querySearch()
@@ -104,7 +105,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       (availabile) => {
         if (availabile._id.toString() === soltId.toString()) {
           availabile.booked = true;
-          availabile.booked_slots.push(slot_time)
+          availabile.booked_slots.push(slot_time);
         }
         return availabile;
       }
@@ -125,7 +126,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       travel_price,
       total_price,
       slot_time,
-      class_date: moment(req.body?.date).format("YYYY-MM-DD")
+      class_date: moment(req.body?.date).format("YYYY-MM-DD"),
     });
 
     await PaymentModel.create({
@@ -133,8 +134,8 @@ exports.update_tutor_schedule = async (req, res, next) => {
       tutor_id: req?.params?.id,
       class_id: new_class?._id,
       price: total_price,
-      date: new Date()
-    })
+      date: new Date(),
+    });
 
     const updated_tutor_profile = await TutorModel.findOne({
       user_id: id,
@@ -165,9 +166,12 @@ exports.get_single_tutor = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.upload_id_iqama_verification = async (req, res, next) => {
   try {
-    await TutorModel.updateOne({
-      user_id: req?.params?.id,
-    }, { $set: { id_iqama_verification: req.file.path } });
+    await TutorModel.updateOne(
+      {
+        user_id: req?.params?.id,
+      },
+      { $set: { id_iqama_verification: req.file.path } }
+    );
 
     const data = await TutorModel.findOne({
       user_id: req?.params?.id,
@@ -184,14 +188,14 @@ exports.upload_id_iqama_verification = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.upload_certifications = async (req, res, next) => {
   try {
-    const { _id } = req?.user
+    const { _id } = req?.user;
     let certifications_path = req.files.map(({ path }) => path);
     let tutor = await TutorModel.findOne({
       user_id: _id,
-    })
-    tutor.certificates.push(...certifications_path)
+    });
+    tutor.certificates.push(...certifications_path);
 
-    await tutor.save()
+    await tutor.save();
 
     const data = await TutorModel.findOne({
       user_id: _id,

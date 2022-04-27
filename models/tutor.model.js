@@ -10,7 +10,11 @@ const tutorSchema = mongoose.Schema(
     gender: { type: String },
     location: { type: String },
     id_iqama_verification: { type: String },
-    id_iqama_verification_approved: { type: String, default: 'pending', enum: ["pending", 'approved', 'declined'] },
+    id_iqama_verification_approved: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "approved", "declined"],
+    },
     certificates: [{ type: String }],
     education: [
       {
@@ -37,9 +41,11 @@ const tutorSchema = mongoose.Schema(
     //   enum: ["online", "tutor_home", "student_home"],
     // },
     teach_type: [{ type: String }],
-    main_field: { type: String },
+    main_field: [{ type: String }],
     you_teach: [{ type: String }],
-    level_you_teach: [{ type: String, enum: ["Beginner", "Intermediate", "Advanced"] }],
+    level_you_teach: [
+      { type: String, enum: ["Beginner", "Intermediate", "Advanced"] },
+    ],
     student_age_you_teach: [
       {
         from_age: { type: Number },
@@ -60,7 +66,7 @@ const tutorSchema = mongoose.Schema(
       // five_std_grp_rate: { type: Number },
       // seven_std_grp_rate: { type: Number },
       // offer_demo: { type: Boolean },
-      // 4, 8 , 12 class package 
+      // 4, 8 , 12 class package
       four_class_rate: { type: Number },
       eight_class_rate: { type: Number },
       twelve_class_rate: { type: Number },
@@ -114,11 +120,11 @@ const tutorSchema = mongoose.Schema(
         user_id: { type: mongoose.Types.ObjectId, ref: "Users" },
         rating: { type: Number },
         comment: { type: String },
-        files: [{ type: String }]
+        files: [{ type: String }],
       },
     ],
     no_of_review: { type: Number, default: 0 },
-    rating: { type: Number, default: 0, },
+    rating: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
