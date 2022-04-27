@@ -17,7 +17,6 @@ exports.auth = async (req, res, next) => {
 
     const decoded = jwt?.verify(token, config.JWT_SECRET);
     const user = await User.findOne({ _id: decoded.id });
-
     if (!user) {
       return res
         .status(401)
