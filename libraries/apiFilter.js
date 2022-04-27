@@ -24,13 +24,18 @@ class APIFilter {
   }
 
   main_field() {
-    const keywords = this.query.main_field && {
-      main_field: {
-        $regex: this.query.main_field,
-        $options: "i",
-      },
-    };
+    // const keywords = this.query.main_field && {
+    //   main_field: {
+    //     $regex: this.query.main_field,
+    //     $options: "i",
+    //   },
+    // };
 
+    // this.document = this.document.find({ ...keywords });
+    // return this;
+    const keywords = this.query.sub_field && {
+      main_field: { $in: this.query.sub_field },
+    };
     this.document = this.document.find({ ...keywords });
     return this;
   }
@@ -79,7 +84,7 @@ class APIFilter {
         $gte: Number(this.query.age),
       },
     };
-    console.log(Number(this.query.age))
+    console.log(Number(this.query.age));
     this.document = this.document.find({ ...keywords });
     return this;
   }
@@ -93,9 +98,13 @@ class APIFilter {
   }
 
   price() {
-    const keywords = this.query.priceRange && this.query?.priceRange?.length > 0 && {
-      "pricing.hourly_rate": { $gte: Number(this.query?.priceRange[0]), $lte: Number(this.query?.priceRange[1]) }
-    }
+    const keywords = this.query.priceRange &&
+      this.query?.priceRange?.length > 0 && {
+        "pricing.hourly_rate": {
+          $gte: Number(this.query?.priceRange[0]),
+          $lte: Number(this.query?.priceRange[1]),
+        },
+      };
     this.document = this.document.find({ ...keywords });
     return this;
   }
