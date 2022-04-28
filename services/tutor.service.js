@@ -22,7 +22,7 @@ exports.update_tutor_profile_service = async (req) => {
     pricing,
     bank_info,
     schedule,
-    gender
+    gender,
   } = req?.body;
   console.log(req.body);
   const update_tutor_object = {};
@@ -37,7 +37,6 @@ exports.update_tutor_profile_service = async (req) => {
   if (email) {
     update_tutor_object.email = email;
     update_user_object.email = email;
-    update_user_object.is_profile_completed = true;
   }
   if (phone_number) {
     update_tutor_object.phone_number = phone_number;
@@ -96,6 +95,8 @@ exports.update_tutor_profile_service = async (req) => {
     let images_path = req.files.map(({ path }) => path);
     update_tutor_object.gallery = images_path;
   }
+
+  update_user_object.is_profile_completed = true;
 
   return {
     update_tutor_object,
