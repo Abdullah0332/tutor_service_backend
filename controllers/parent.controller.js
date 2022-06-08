@@ -38,7 +38,15 @@ exports.update_parent_profile = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.add_kid = async (req, res, next) => {
   try {
-    const { first_name, last_name, age, class_name, gender } = req.body;
+    const {
+      first_name,
+      last_name,
+      age,
+      class_name,
+      gender,
+      educational,
+      grade,
+    } = req.body;
 
     const parent = await ParentModel.findOne({ user_id: req?.user?._id });
     const user = await UserModel.findById(req?.user?._id);
@@ -54,6 +62,8 @@ exports.add_kid = async (req, res, next) => {
       class_name,
       gender,
       profile_picture: req?.file?.path,
+      educational,
+      grade,
     });
 
     user.is_profile_completed = true;
@@ -97,7 +107,15 @@ exports.remove_kid = async (req, res, next) => {
 exports.update_kid = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { first_name, last_name, age, class_name, gender } = req.body;
+    const {
+      first_name,
+      last_name,
+      age,
+      class_name,
+      gender,
+      educational,
+      grade,
+    } = req.body;
 
     const parent = await ParentModel.findOne({ user_id: req?.user?._id });
 
@@ -115,6 +133,8 @@ exports.update_kid = async (req, res, next) => {
           "kids.$.class_name": class_name,
           "kids.$.gender": gender,
           "kids.$.profile_picture": req?.file?.path,
+          "kids.$.educational,": educational,
+          "kids.$.grade,": grade,
         },
       }
     );
@@ -147,7 +167,9 @@ exports.get_all_kid = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.get_all_payments = async (req, res, next) => {
   try {
-    const payments = await paymentModel.find({ user_id: req?.user?._id }).populate("user_id tutor_id class_id");
+    const payments = await paymentModel
+      .find({ user_id: req?.user?._id })
+      .populate("user_id tutor_id class_id");
 
     res.status(200).json(payments);
   } catch (error) {

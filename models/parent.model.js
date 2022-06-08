@@ -23,6 +23,8 @@ const parentSchema = mongoose.Schema(
         gender: { type: String },
         class_name: { type: String },
         profile_picture: { type: String },
+        educational: { type: String },
+        grade: { type: String },
       },
     ],
   },
