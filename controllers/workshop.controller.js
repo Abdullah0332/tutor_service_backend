@@ -27,7 +27,7 @@ exports.create_workshop = async (req, res, next) => {
       return res.status(401).json(errors);
     }
 
-    let galleryImages = req.files.map(({ path }) => path);
+    let galleryImages = req?.files?.map(({ path }) => path);
 
     let workshop = await WorkshopModel.create({
       user_id: req.user._id,
@@ -39,7 +39,7 @@ exports.create_workshop = async (req, res, next) => {
       organizer_name,
       online_workshop,
       contact_information,
-      gallery: galleryImages,
+      gallery: galleryImages || [],
     });
 
     res.status(200).json(workshop);
