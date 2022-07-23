@@ -4,7 +4,7 @@ const ParentModel = require("../models/parent.model.js");
 const {
   update_parent_profile_service,
 } = require("../services/parent.service.js");
-const paymentModel = require("../models/payment.model.js");
+const PaymentModel = require("../models/payment.model.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE PARENT PROFILE -----------------------------
@@ -167,11 +167,30 @@ exports.get_all_kid = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.get_all_payments = async (req, res, next) => {
   try {
-    const payments = await paymentModel
-      .find({ user_id: req?.user?._id })
-      .populate("user_id tutor_id class_id");
+    const payments = await PaymentModel.find({
+      user_id: req?.user?._id,
+    }).populate("user_id tutor_id class_id");
 
     res.status(200).json(payments);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- UPDATE USER TYPR PARENT/INDIVIDUAL -----------------------------
+// ---------------------------------------------------------------
+exports.update_user_type = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const { user_type } = req.body;
+
+    if (!["parent", "individual"].includes(user_type)) {
+      return res.status(500).json({ message: "Please enter valid type." });
+    }
+
+    await UserModel.findOneAndUpdate({ _id: _id }, { $set: { user_type } });
+    res.status(200).json({ message: "User Types Updated Successfully" });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
