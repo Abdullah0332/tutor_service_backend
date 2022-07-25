@@ -5,6 +5,7 @@ const formatDate = require("date-fns/format");
 const { isBefore, isSameDay, isAfter } = require("date-fns");
 const { delete_file } = require("../middlewares/multer");
 const moment = require("moment");
+const ParentModel = require("../models/parent.model");
 
 // ---------------------------------------------------------------
 // --------------------- GET UPCOMMING CLASSES -----------------------------
@@ -38,11 +39,25 @@ exports.get_upcoming_classes = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.get_single_class = async (req, res, next) => {
   try {
+    let allKids = [];
     const { id } = req.params;
     let single_class = await ClassModel.findById(id).populate(
       "user_id tutor_id"
     );
-    res.status(200).json(single_class);
+
+    console.log(single_class.kids);
+    let allClassesKids = await ParentModel.find({
+      "kids._id": { $in: single_class.kids },
+    }).select("kids");
+    allClassesKids?.map((el) =>
+      el.kids.map(
+        (kid) =>
+          single_class?.kids.find((e) => e.toString() === kid._id.toString()) &&
+          allKids.push(kid)
+      )
+    );
+    console.log(allKids);
+    res.status(200).json({ ...single_class.toObject(), kids: allKids });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
@@ -233,11 +248,9 @@ exports.place_review = async (req, res, next) => {
 
     const class_doc = await ClassModel.findById(class_id);
     if (class_doc?.reviewed_by?.includes(req?.user?.id))
-      return res
-        .status(404)
-        .send({
-          message: "This user already place review aganist this class.",
-        });
+      return res.status(404).send({
+        message: "This user already place review aganist this class.",
+      });
     class_doc?.reviewed_by.push(req?.user?.id);
     const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id });
     let all_reviews = tutor?.reviews;
