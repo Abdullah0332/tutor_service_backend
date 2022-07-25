@@ -45,7 +45,6 @@ exports.get_single_class = async (req, res, next) => {
       "user_id tutor_id"
     );
 
-    console.log(single_class.kids);
     let allClassesKids = await ParentModel.find({
       "kids._id": { $in: single_class.kids },
     }).select("kids");
@@ -56,7 +55,7 @@ exports.get_single_class = async (req, res, next) => {
           allKids.push(kid)
       )
     );
-    console.log(allKids);
+
     res.status(200).json({ ...single_class.toObject(), kids: allKids });
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -69,6 +68,7 @@ exports.get_single_class = async (req, res, next) => {
 exports.get_user_classes = async (req, res, next) => {
   try {
     let classes;
+    let updatedClasss = [];
     if (req.user.user_type === "tutor") {
       classes = await ClassModel.find({ tutor_id: req.user._id }).populate(
         "user_id tutor_id"
@@ -78,7 +78,21 @@ exports.get_user_classes = async (req, res, next) => {
         "user_id tutor_id"
       );
     }
-    res.status(200).json(classes);
+    for (let i = 0; i < classes.length; i++) {
+      let allKids = [];
+      let allClassesKids = await ParentModel.find({
+        "kids._id": { $in: classes[i].kids },
+      }).select("kids");
+      allClassesKids?.map((el) =>
+        el.kids.map(
+          (kid) =>
+            classes[i]?.kids.find((e) => e.toString() === kid._id.toString()) &&
+            allKids.push(kid)
+        )
+      );
+      updatedClasss.push({ ...classes[i].toObject(), kids: allKids });
+    }
+    res.status(200).json(updatedClasss);
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
