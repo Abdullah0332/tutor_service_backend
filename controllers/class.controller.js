@@ -133,6 +133,21 @@ exports.get_announcement = async (req, res, next) => {
 };
 
 // ---------------------------------------------------------------
+// --------------------- GET ANNOUNCEMENT BY CLASS ID -----------------------------
+// ---------------------------------------------------------------
+exports.get_announcement_by_class_id = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const announcement = await AnnouncementModel.findOne({
+      class_id: id,
+    }).populate("user_id class_id");
+    res.status(200).json(announcement);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
 // --------------------- UPDATE ANNOUNCEMENT -----------------------------
 // ---------------------------------------------------------------
 exports.update_announcement = async (req, res, next) => {
