@@ -206,6 +206,8 @@ exports.new_comment = async (req, res, next) => {
     const announcement = await AnnouncementModel.findById(id);
     let announcement_comments = announcement?.comments;
     let comment_obj = {};
+    comment_obj.user_id = req?.user?._id;
+    comment_obj.name = `${req?.user?.first_name} ${req?.user?.last_name}`;
     if (message) comment_obj.message = message;
     if (req.files?.length > 0) {
       let comment_files = req.files.map(({ path }) => path);
