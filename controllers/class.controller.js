@@ -208,7 +208,7 @@ exports.new_comment = async (req, res, next) => {
     let comment_obj = {};
     comment_obj.user_id = req?.user?._id;
     comment_obj.name = `${req?.user?.first_name} ${req?.user?.last_name}`;
-    comment_obj.name = new Date();
+    comment_obj.time = new Date();
     if (message) comment_obj.message = message;
     if (req.files?.length > 0) {
       let comment_files = req.files.map(({ path }) => path);
