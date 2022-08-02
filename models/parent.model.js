@@ -7,6 +7,7 @@ const parentSchema = mongoose.Schema(
     email: { type: String },
     phone_number: { type: String },
     location: { type: String },
+    gender: { type: String },
     payment_detail: [
       {
         name_on_card: { type: String },

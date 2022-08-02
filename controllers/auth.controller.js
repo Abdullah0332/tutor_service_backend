@@ -19,7 +19,8 @@ const {
 // ---------------------------------------------------------------
 exports.sign_up = async (req, res, next) => {
   try {
-    const { user_type, first_name, last_name, email, password } = req.body;
+    const { user_type, first_name, last_name, email, password, gender } =
+      req.body;
 
     const { isValid, errors } = await sign_up_validator(req.body);
 
@@ -41,14 +42,16 @@ exports.sign_up = async (req, res, next) => {
       await TutorModel.create({
         user_id: user?._id,
         email: email.toLowerCase(),
+        gender,
       });
     }
     if (user_type === "parent" || user_type === "individual") {
-      console.log("OKKK")
+      console.log("OKKK");
       await ParentModel.create({
         user_id: user?._id,
         type: user_type,
         email: email.toLowerCase(),
+        gender,
       });
     }
 
@@ -84,24 +87,23 @@ exports.login = async (req, res, next) => {
 
     let profile;
     if (user?.user_type === "tutor") {
-
       profile = await TutorModel.findOne({ user_id: user._id });
       // if (profile?.id_iqama_verification_approved === 'pending')
       //   return res.status(404).json({ message: "Your ID and IQAMA is not Approved or Declined by Admin." });
       // if (profile?.id_iqama_verification_approved === 'declined')
       //   return res.status(404).json({ message: "Your ID and IQAMA is Declined by Admin." });
       return res.status(200).json({ ...user.toObject(), token, profile });
-
-    } else if (user?.user_type === "parent" || user?.user_type === "individual") {
-
+    } else if (
+      user?.user_type === "parent" ||
+      user?.user_type === "individual"
+    ) {
       profile = await ParentModel.findOne({ user_id: user._id });
       return res.status(200).json({ ...user.toObject(), token });
-
     } else {
       res.status(200).json({ ...user.toObject(), token, profile });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };
@@ -362,27 +364,27 @@ exports.update_payment_method = async (req, res, next) => {
 
     user?.user_type === "tutor"
       ? await TutorModel.updateOne(
-        { "payment_detail._id": id },
-        {
-          $set: {
-            "payment_detail.$.name_on_card": name_on_card,
-            "payment_detail.$.card_number": card_number,
-            "payment_detail.$.exp_date": exp_date,
-            "payment_detail.$.cvv": cvv,
-          },
-        }
-      )
+          { "payment_detail._id": id },
+          {
+            $set: {
+              "payment_detail.$.name_on_card": name_on_card,
+              "payment_detail.$.card_number": card_number,
+              "payment_detail.$.exp_date": exp_date,
+              "payment_detail.$.cvv": cvv,
+            },
+          }
+        )
       : await ParentModel.updateOne(
-        { "payment_detail._id": id },
-        {
-          $set: {
-            "payment_detail.$.name_on_card": name_on_card,
-            "payment_detail.$.card_number": card_number,
-            "payment_detail.$.exp_date": exp_date,
-            "payment_detail.$.cvv": cvv,
-          },
-        }
-      );
+          { "payment_detail._id": id },
+          {
+            $set: {
+              "payment_detail.$.name_on_card": name_on_card,
+              "payment_detail.$.card_number": card_number,
+              "payment_detail.$.exp_date": exp_date,
+              "payment_detail.$.cvv": cvv,
+            },
+          }
+        );
 
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
@@ -456,7 +458,6 @@ exports.get_all_payment_method = async (req, res, next) => {
   }
 };
 
-
 // ---------------------------------------------------------------
 // --------------------- GET UPCOMMING CLASSES -----------------------------
 // ---------------------------------------------------------------
@@ -465,8 +466,7 @@ exports.get_upcoming_classes = async (req, res, next) => {
     const filterDate = new Date(req.params.date);
     console.log(filterDate);
     const filterDay = formatDate(filterDate, "ccc");
-    console.log(filterDay)
-
+    console.log(filterDay);
 
     res.status(200).json("data");
   } catch (error) {
