@@ -244,15 +244,15 @@ exports.delete_comment = async (req, res, next) => {
       "comments._id": id,
     });
 
-    const commentExists = announcement.comments.find(
+    const commentExists = announcement?.comments?.find(
       (r) => r._id.toString() === id.toString()
     );
 
     if (commentExists) {
-      announcement.comments.forEach((comment) => {
-        if (comment._id.toString() === id.toString()) {
-          for (let i = 0; i < comment.files.length; i++) {
-            delete_file(comment.files[i]);
+      announcement?.comments?.forEach((comment) => {
+        if (comment?._id?.toString() === id?.toString()) {
+          for (let i = 0; i < comment?.files?.length; i++) {
+            delete_file(comment?.files[i]);
           }
           comment.remove();
         }
@@ -286,16 +286,16 @@ exports.place_review = async (req, res, next) => {
     class_doc?.reviewed_by.push(req?.user?.id);
     const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id });
     let all_reviews = tutor?.reviews;
-    let files = [];
-    if (req?.files?.length > 0) {
-      files = req.files.map(({ path }) => path);
-    }
+    // let files = [];
+    // if (req?.files?.length > 0) {
+    //   files = req.files.map(({ path }) => path);
+    // }
     all_reviews.push({
       class_id,
       user_id: req?.user?._id,
       rating,
       comment,
-      files,
+      // files,
     });
 
     tutor.no_of_review++;

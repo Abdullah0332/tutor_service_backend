@@ -72,7 +72,7 @@ router.put(
   "/place-review",
   sanitizeData,
   auth,
-  file.any("files", "30"),
+  // file.any("files", "30"),
   place_review
 );
 
