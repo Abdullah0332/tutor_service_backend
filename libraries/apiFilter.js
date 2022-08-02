@@ -80,11 +80,20 @@ class APIFilter {
 
   age() {
     const keywords = this.query.age && {
-      "student_age_you_teach.from_age": {
-        $gte: Number(this.query.age),
-      },
+      $and: [
+        {
+          "student_age_you_teach.from_age": {
+            $lte: Number(this.query?.age),
+          },
+        },
+        {
+          "student_age_you_teach.to_age": {
+            $gte: Number(this.query.age),
+          },
+        },
+      ],
     };
-    console.log(Number(this.query.age));
+    console.log(Number(this.query.age), keywords);
     this.document = this.document.find({ ...keywords });
     return this;
   }
