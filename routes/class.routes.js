@@ -16,6 +16,7 @@ const {
   place_review,
   get_announcement_by_class_id,
   purchases_earnings,
+  update_class,
 } = require("../controllers/class.controller");
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.get(
   auth,
   get_upcoming_classes
 );
+router.put("/update-class/:id", sanitizeData, auth, update_class);
 router.get("/single-class/:id", sanitizeData, auth, get_single_class);
 router.get("/user-classes", sanitizeData, auth, get_user_classes);
 router.post(

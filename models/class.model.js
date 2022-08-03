@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const classSchema = mongoose.Schema(
   {
+    name: { type: String },
+    meet_link: { type: String },
     user_id: { type: mongoose.Types.ObjectId, ref: "User" },
     tutor_id: { type: mongoose.Types.ObjectId, ref: "User" },
     slotId: { type: mongoose.Types.ObjectId },

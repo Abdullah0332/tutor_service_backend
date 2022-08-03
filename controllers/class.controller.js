@@ -36,6 +36,28 @@ exports.get_upcoming_classes = async (req, res, next) => {
 };
 
 // ---------------------------------------------------------------
+// --------------------- UPDATE CLASS -----------------------------
+// ---------------------------------------------------------------
+exports.update_class = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, meet_link } = req.body;
+    let updated_obj = {};
+    if (name) updated_obj.name = name;
+    if (meet_link) updated_obj.meet_link = meet_link;
+    await ClassModel.findOneAndUpdate(
+      { _id: id },
+      { $set: { ...updated_obj } }
+    );
+    let updated_class = await ClassModel.findOne({ _id: id });
+
+    res.status(200).json(updated_class);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
 // --------------------- GET SINGLE CLASS -----------------------------
 // ---------------------------------------------------------------
 exports.get_single_class = async (req, res, next) => {
