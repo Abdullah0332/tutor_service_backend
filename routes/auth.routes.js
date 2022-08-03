@@ -18,6 +18,7 @@ const {
   remove_payment_method,
   get_all_payment_method,
   socialLogin,
+  dashboard_counts,
 } = require("../controllers/auth.controller.js");
 
 const router = express.Router();
@@ -65,5 +66,6 @@ router.get(
   auth,
   get_all_payment_method
 );
+router.get("/dashboard-counts", sanitizeData, auth, dashboard_counts);
 
 module.exports = router;

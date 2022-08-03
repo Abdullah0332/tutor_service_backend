@@ -15,6 +15,7 @@ const classSchema = mongoose.Schema(
     travel_price: { type: Number },
     total_price: { type: Number },
     class_date: { type: String },
+    completed: { type: Boolean, default: false },
     reviewed_by: [{ type: String }],
   },
   { timestamps: true }

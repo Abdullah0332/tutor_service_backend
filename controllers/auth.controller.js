@@ -1,6 +1,7 @@
 const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const ParentModel = require("../models/parent.model.js");
+const ClassModel = require("../models/class.model.js");
 const {
   sign_up_validator,
   login_validator,
@@ -459,16 +460,21 @@ exports.get_all_payment_method = async (req, res, next) => {
 };
 
 // ---------------------------------------------------------------
-// --------------------- GET UPCOMMING CLASSES -----------------------------
+// --------------------- DASHBOARD COUNTS -----------------------------
 // ---------------------------------------------------------------
-exports.get_upcoming_classes = async (req, res, next) => {
+exports.dashboard_counts = async (req, res, next) => {
   try {
-    const filterDate = new Date(req.params.date);
-    console.log(filterDate);
-    const filterDay = formatDate(filterDate, "ccc");
-    console.log(filterDay);
-
-    res.status(200).json("data");
+    let [upcomming, completed] = await Promise.all([
+      ClassModel.countDocuments({
+        completed: false,
+        user_id: req.user._id,
+      }),
+      ClassModel.countDocuments({
+        completed: true,
+        user_id: req.user._id,
+      }),
+    ]);
+    res.status(200).json({ upcomming, completed });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
