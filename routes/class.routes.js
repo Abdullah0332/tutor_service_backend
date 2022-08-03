@@ -15,6 +15,7 @@ const {
   delete_comment,
   place_review,
   get_announcement_by_class_id,
+  purchases_earnings,
 } = require("../controllers/class.controller");
 
 const router = express.Router();
@@ -75,5 +76,7 @@ router.put(
   // file.any("files", "30"),
   place_review
 );
+
+router.get("/purchases-earnings", sanitizeData, auth, purchases_earnings);
 
 module.exports = router;

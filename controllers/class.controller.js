@@ -6,6 +6,7 @@ const { isBefore, isSameDay, isAfter } = require("date-fns");
 const { delete_file } = require("../middlewares/multer");
 const moment = require("moment");
 const ParentModel = require("../models/parent.model");
+const PaymentModel = require("../models/payment.model");
 
 // ---------------------------------------------------------------
 // --------------------- GET UPCOMMING CLASSES -----------------------------
@@ -311,6 +312,20 @@ exports.place_review = async (req, res, next) => {
     }).populate("user_id");
 
     res.status(200).json(updated_tutor);
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- PURCHASES / EARNINGs  -----------------------------
+// ---------------------------------------------------------------
+exports.purchases_earnings = async (req, res, next) => {
+  try {
+    let purchases = await PaymentModel.find({ user_id: req.user._id }).populate(
+      "tutor_id user_id class_id"
+    );
+    res.status(200).json(purchases);
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
