@@ -98,6 +98,8 @@ exports.update_tutor_schedule = async (req, res, next) => {
       travel_price,
       total_price,
       slot_time,
+      start_time,
+      end_time,
     } = req.body;
     const { id } = req.params;
     const tutor = await TutorModel.findOne({ user_id: id });
@@ -126,6 +128,8 @@ exports.update_tutor_schedule = async (req, res, next) => {
       travel_price,
       total_price,
       slot_time,
+      start_time,
+      end_time,
       class_date: moment(req.body?.date).format("YYYY-MM-DD"),
     });
 
