@@ -93,13 +93,13 @@ exports.get_user_classes = async (req, res, next) => {
     let classes;
     let updatedClasss = [];
     if (req.user.user_type === "tutor") {
-      classes = await ClassModel.find({ tutor_id: req.user._id }).populate(
-        "user_id tutor_id"
-      );
+      classes = await ClassModel.find({ tutor_id: req.user._id })
+        .populate("user_id tutor_id")
+        .sort({ createdAt: -1 });
     } else {
-      classes = await ClassModel.find({ user_id: req.user._id }).populate(
-        "user_id tutor_id"
-      );
+      classes = await ClassModel.find({ user_id: req.user._id })
+        .populate("user_id tutor_id")
+        .sort({ createdAt: -1 });
     }
     for (let i = 0; i < classes.length; i++) {
       let allKids = [];
