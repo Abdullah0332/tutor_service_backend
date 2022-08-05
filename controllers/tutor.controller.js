@@ -100,6 +100,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       slot_time,
       start_time,
       end_time,
+      class_name,
     } = req.body;
     const { id } = req.params;
     const tutor = await TutorModel.findOne({ user_id: id });
@@ -122,6 +123,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       kids,
       user_type,
       class_location,
+      name: class_name,
       selected_pkg,
       no_of_booking,
       price,
