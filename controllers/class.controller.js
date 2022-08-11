@@ -306,7 +306,7 @@ exports.place_review = async (req, res, next) => {
       return res.status(404).send({
         message: "This user already place review aganist this class.",
       });
-    class_doc?.reviewed_by.push(req?.user?.id);
+    class_doc?.reviewed_by.push(req?.user?._id);
     const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id });
     let all_reviews = tutor?.reviews || [];
     // let files = [];
@@ -316,6 +316,7 @@ exports.place_review = async (req, res, next) => {
     all_reviews.push({
       class_id,
       user_id: req?.user?._id,
+      // username: `${req?.user?.first_name} ${req?.user?.last_name}`,
       rating,
       comment,
       // files,
@@ -331,10 +332,11 @@ exports.place_review = async (req, res, next) => {
 
     const updated_tutor = await TutorModel.findOne({
       user_id: class_doc?.tutor_id,
-    }).populate("user_id");
+    }).populate("user_id reviews.user_id");
 
     res.status(200).json(updated_tutor);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 };

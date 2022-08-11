@@ -18,7 +18,7 @@ const classSchema = mongoose.Schema(
     total_price: { type: Number },
     class_date: { type: String },
     completed: { type: Boolean, default: false },
-    reviewed_by: [{ type: String }],
+    reviewed_by: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     start_time: { type: Date },
     end_time: { type: Date },
   },

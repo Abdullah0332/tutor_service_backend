@@ -118,7 +118,8 @@ const tutorSchema = mongoose.Schema(
     reviews: [
       {
         class_id: { type: mongoose.Types.ObjectId, ref: "Class" },
-        user_id: { type: mongoose.Types.ObjectId, ref: "Users" },
+        user_id: { type: mongoose.Types.ObjectId, ref: "User" },
+        // username: { type: String },
         rating: { type: Number },
         comment: { type: String },
         files: [{ type: String }],
