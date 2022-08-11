@@ -308,7 +308,7 @@ exports.place_review = async (req, res, next) => {
       });
     class_doc?.reviewed_by.push(req?.user?.id);
     const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id });
-    let all_reviews = tutor?.reviews;
+    let all_reviews = tutor?.reviews || [];
     // let files = [];
     // if (req?.files?.length > 0) {
     //   files = req.files.map(({ path }) => path);
