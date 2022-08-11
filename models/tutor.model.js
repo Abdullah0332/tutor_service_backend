@@ -87,6 +87,7 @@ const tutorSchema = mongoose.Schema(
       branch_on_account: { type: String },
     },
     schedule: {
+      availability_month: { type: String },
       // class_time: { type: String },
       class_time: [{ time: { type: String }, price: { type: Number } }],
       availability_active: {

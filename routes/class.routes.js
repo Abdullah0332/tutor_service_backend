@@ -71,13 +71,7 @@ router.put(
 );
 router.put("/delete-comment", sanitizeData, auth, delete_comment);
 
-router.put(
-  "/place-review",
-  sanitizeData,
-  auth,
-  // file.any("files", "30"),
-  place_review
-);
+router.put("/place-review", sanitizeData, auth, place_review);
 
 router.get("/purchases-earnings", sanitizeData, auth, purchases_earnings);
 
