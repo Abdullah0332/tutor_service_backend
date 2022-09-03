@@ -11,6 +11,10 @@ const config = {
   JWT_EXPIRE_TIME: process.env.JWT_EXPIRE_TIME,
 
   SENDING_EMAIL: process.env.SENDING_EMAIL,
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  TWILIO_API_KEY: process.env.TWILIO_API_KEY,
+  TWILIO_API_SECRET: process.env.TWILIO_API_SECRET,
+  TWILIO_CHAT_SERVICE_SID: process.env.TWILIO_CHAT_SERVICE_SID
 };
 
 module.exports = config;

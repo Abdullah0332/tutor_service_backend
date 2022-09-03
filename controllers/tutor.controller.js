@@ -1,6 +1,7 @@
 const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const ClassModel = require("../models/class.model.js");
+const ChatRoomModel = require("../models/chatRoom.model");
 const AnnouncementModel = require("../models/announcement.model.js");
 const PaymentModel = require("../models/payment.model");
 const APIFilter = require("../libraries/apiFilter.js");
@@ -134,6 +135,12 @@ exports.update_tutor_schedule = async (req, res, next) => {
       end_time,
       class_date: moment(req.body?.date).format("YYYY-MM-DD"),
     });
+
+    await ChatRoomModel.create({
+      tutor_id: req?.params?.id,
+      user_id: req?.user?.id,
+      class_id: new_class?._id
+    })
 
     await PaymentModel.create({
       user_id: req?.user?.id,

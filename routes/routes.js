@@ -7,6 +7,7 @@ const paymentRouter = require("./payment.routes.js");
 const classRouter = require("./class.routes.js");
 const mobileRouter = require("./mobile.routes.js");
 const workshopRouter = require("./workshop.routes");
+const twilioRouter = require("./twilio.routes");
 
 const apiRouter = express.Router();
 
@@ -18,5 +19,6 @@ apiRouter.use("/payment", paymentRouter);
 apiRouter.use("/class", classRouter);
 apiRouter.use("/mobile", mobileRouter);
 apiRouter.use("/workshop", workshopRouter);
+apiRouter.use("/twilio", twilioRouter);
 
 module.exports = apiRouter;
