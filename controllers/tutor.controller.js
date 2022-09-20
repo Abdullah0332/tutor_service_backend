@@ -10,6 +10,7 @@ const moment = require("moment");
 const {
   update_tutor_profile_service,
 } = require("../services/tutor.service.js");
+const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE TUTOR PROFILE -----------------------------
@@ -30,6 +31,23 @@ exports.update_tutor_profile = async (req, res, next) => {
     );
 
     const data = await TutorModel.findOne({ user_id: req?.user?._id });
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Profile Updated`,
+    //     body: `Profile Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Profile Updated`,
+      body: `Profile Updated Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json(data);
   } catch (error) {
@@ -153,6 +171,41 @@ exports.update_tutor_schedule = async (req, res, next) => {
     const updated_tutor_profile = await TutorModel.findOne({
       user_id: id,
     }).populate("user_id");
+
+    // let user_filtered_tokens = await filteredFCMTokens(req?.user?.id);
+    // if (user_filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Class Booked`,
+    //     body: `Class ${new_class?.title} Booked Successfully.`,
+    //     userTokens: user_filtered_tokens
+    //   });
+    // }
+
+    // let tutor_filtered_tokens = await filteredFCMTokens(req?.params?.id);
+    // if (tutor_filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Class Booked`,
+    //     body: `User ${req?.user?.first_name} ${req?.user?.last_name} Booked Class ${new_class?.title}.`,
+    //     userTokens: tutor_filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id || req?.user?.id,
+      type: "view",
+      title: `Class Booked`,
+      body: `Class ${new_class?.title} Booked Successfully.`,
+      status: "unread",
+    })
+
+    await notificationModel.create({
+      user_id: req?.params?.id,
+      type: "view",
+      title: `Class Booked`,
+      body: `User ${req?.user?.first_name} ${req?.user?.last_name} Booked Class ${new_class?.title}.`,
+      status: "unread",
+    })
+
     res.status(200).json(updated_tutor_profile);
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -213,6 +266,23 @@ exports.upload_certifications = async (req, res, next) => {
     const data = await TutorModel.findOne({
       user_id: _id,
     }).populate("user_id");
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Certifications Uploaded`,
+    //     body: `Certifications Uploaded Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Certifications Uploaded`,
+      body: `Certifications Uploaded Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json(data);
   } catch (error) {

@@ -2,18 +2,21 @@ const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const ParentModel = require("../models/parent.model.js");
 const ClassModel = require("../models/class.model.js");
+const FCMTokenModel = require("../models/fcmToken.model");
+const NotificationModel = require("../models/notification.model");
 const {
   sign_up_validator,
   login_validator,
   forgot_password_validation,
   otp_validation,
   reset_password_validation,
-  update_password_from_profile_validation,
+  update_password_from_profile_validation
 } = require("../validators/auth.validations.js");
 const { randomOTP } = require("../libraries/utils.js");
 const {
-  forgot_password_email,
+  forgot_password_email
 } = require("../libraries/emails/email.sender.js");
+const { sendNotification, filteredFCMTokens } = require("../libraries/pushNotification.js");
 
 // ---------------------------------------------------------------
 // --------------------- SIGN UP -----------------------------
@@ -36,23 +39,22 @@ exports.sign_up = async (req, res, next) => {
       email: email.toLowerCase(),
       password,
       register_type: "local",
-      active: true,
+      active: true
     });
 
     if (user_type === "tutor") {
       await TutorModel.create({
         user_id: user?._id,
         email: email.toLowerCase(),
-        gender,
+        gender
       });
     }
     if (user_type === "parent" || user_type === "individual") {
-      console.log("OKKK");
       await ParentModel.create({
         user_id: user?._id,
         type: user_type,
         email: email.toLowerCase(),
-        gender,
+        gender
       });
     }
 
@@ -69,7 +71,7 @@ exports.sign_up = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.login = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, fcm_token } = req.body;
 
     const { isValid, errors } = await login_validator(req.body);
 
@@ -78,13 +80,19 @@ exports.login = async (req, res, next) => {
     }
 
     const user = await UserModel.findOne({
-      email: email.toLowerCase(),
+      email: email.toLowerCase()
     });
 
     if (user?.status === "blocked")
       return res.status(404).json({ message: "User is blocked by admin." });
 
     const token = user.getJwtToken();
+
+    // if (fcm_token) {
+    //   await FCMTokenModel.create({
+    //   user_id: user?._id,
+    //   fcm_token
+    // })}
 
     let profile;
     if (user?.user_type === "tutor") {
@@ -103,6 +111,24 @@ exports.login = async (req, res, next) => {
     } else {
       res.status(200).json({ ...user.toObject(), token, profile });
     }
+
+    // let filtered_tokens = await filteredFCMTokens(user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `User Logged In`,
+    //     body: `${user?.first_name} ${user?.last_name} Logged In Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({
+      user_id: user?._id,
+      type: "view",
+      title: "User Logged In",
+      body: `${user?.first_name} ${user?.last_name} Logged In Successfully.`,
+      status: "unread",
+    })
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error?.message });
@@ -117,8 +143,31 @@ exports.socialLogin = async (req, res, next) => {
     const { name, email, url, type, user_type } = req.body;
 
     const user = await UserModel.findOne({
-      email: email.toLowerCase(),
+      email: email.toLowerCase()
     });
+
+     // if (fcm_token) {
+      //   await FCMTokenModel.create({
+      //   user_id: user?._id,
+      //   fcm_token
+      // })}
+
+      // let filtered_tokens = await filteredFCMTokens(user?._id);
+      // if (filtered_tokens?.length > 0) {
+      //   await sendNotification({
+      //     title: `User Logged In`,
+      //     body: `${user?.first_name} ${user?.last_name} logged in successfully`,
+      //     userTokens: filtered_tokens
+      //   });
+      // }
+
+      await NotificationModel.create({
+        user_id: user?._id,
+        type: "view",
+        title: "User Logged In",
+        body: `${user?.first_name} ${user?.last_name} logged in successfully`,
+        status: "unread",
+      })
 
     if (user) {
       const token = user.getJwtToken();
@@ -130,22 +179,23 @@ exports.socialLogin = async (req, res, next) => {
         email: email.toLowerCase(),
         register_type: type,
         active: true,
-        profile_pic: url,
+        profile_pic: url
       });
       if (user_type === "tutor") {
         await TutorModel.create({
           user_id: user?._id,
-          email,
+          email
         });
       } else {
         await ParentModel.create({
           user_id: user?._id,
           type: user_type,
-          email,
+          email
         });
       }
 
       const token = newUser.getJwtToken();
+     
       return res.status(201).json({ ...newUser.toObject(), token });
     }
   } catch (error) {
@@ -198,8 +248,25 @@ exports.forgot_password = async (req, res, next) => {
       email: email,
       subject: "Forgot Password",
       otp: otp,
-      name: `${user?.first_name} ${user?.last_name}`,
+      name: `${user?.first_name} ${user?.last_name}`
     });
+
+    // let filtered_tokens = await filteredFCMTokens(user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Forgot Password`,
+    //     body: `OTP is send successfully on email ${email}`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({
+      user_id: user?._id,
+      type: "view",
+      title: "Forgot Password",
+      body: `OTP is send successfully on email ${email}`,
+      status: "unread",
+    })
 
     res
       .status(200)
@@ -280,14 +347,29 @@ exports.refresh_token = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.update_user_profile_picture = async (req, res, next) => {
   try {
-    console.log(req.file);
-
     await UserModel.updateOne(
       { _id: req?.user?._id },
       { $set: { profile_pic: req?.file?.path } }
     );
 
     const data = await UserModel.findById(req?.user?._id);
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._idd);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Profile Picture Updated`,
+    //     body: `Profile Picture Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: "Profile Picture Updated",
+      body: `Profile Picture Updated Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json(data);
   } catch (error) {
@@ -307,6 +389,24 @@ exports.udpate_password_from_profile = async (req, res, next) => {
     if (isValid > 0) {
       return res.status(401).json(errors);
     }
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Password Updated`,
+    //     body: `Password Updated from Profile Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({ 
+      user_id: req?.user?._id,
+      type: "view",
+      title: "Password Updated",
+      body: `Password Updated from Profile Successfully.`,
+      status: "unread",
+    })
+
 
     res.status(200).json({ message: "Password Updated Successfully" });
   } catch (error) {
@@ -330,7 +430,7 @@ exports.add_payment_method = async (req, res, next) => {
         name_on_card,
         card_number,
         exp_date,
-        cvv,
+        cvv
       };
       await tutor_profile.save();
     } else {
@@ -340,11 +440,28 @@ exports.add_payment_method = async (req, res, next) => {
         name_on_card,
         card_number,
         exp_date,
-        cvv,
+        cvv
       });
 
       await user_profile.save();
     }
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Payment Method Added`,
+    //     body: `Payment Method Added Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({ 
+      user_id: req?.user?._id,
+      type: "view",
+      title: "Payment Method Added",
+      body: `Payment Method Added Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json({ message: "Payment Method Added Successfully" });
   } catch (error) {
@@ -371,8 +488,8 @@ exports.update_payment_method = async (req, res, next) => {
               "payment_detail.$.name_on_card": name_on_card,
               "payment_detail.$.card_number": card_number,
               "payment_detail.$.exp_date": exp_date,
-              "payment_detail.$.cvv": cvv,
-            },
+              "payment_detail.$.cvv": cvv
+            }
           }
         )
       : await ParentModel.updateOne(
@@ -382,10 +499,27 @@ exports.update_payment_method = async (req, res, next) => {
               "payment_detail.$.name_on_card": name_on_card,
               "payment_detail.$.card_number": card_number,
               "payment_detail.$.exp_date": exp_date,
-              "payment_detail.$.cvv": cvv,
-            },
+              "payment_detail.$.cvv": cvv
+            }
           }
-        );
+      );
+    
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Payment Method Updated`,
+    //     body: `Payment Method Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({ 
+      user_id: req?.user?._id,
+      type: "view",
+      title: "Payment Method Updated",
+      body: `Payment Method Updated Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
@@ -422,6 +556,23 @@ exports.remove_payment_method = async (req, res, next) => {
     );
     user_detail.payment_detail = updated_user_detail;
     await user_detail.save();
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Payment Method Removed`,
+    //     body: `Payment Method Removed Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await NotificationModel.create({ 
+      user_id: req?.user?._id,
+      type: "view",
+      title: "Payment Method Removed",
+      body: `Payment Method Removed Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json({ message: "Payment Method Removed Successfully" });
   } catch (error) {
@@ -467,12 +618,12 @@ exports.dashboard_counts = async (req, res, next) => {
     let [upcomming, completed] = await Promise.all([
       ClassModel.countDocuments({
         completed: false,
-        user_id: req.user._id,
+        user_id: req.user._id
       }),
       ClassModel.countDocuments({
         completed: true,
-        user_id: req.user._id,
-      }),
+        user_id: req.user._id
+      })
     ]);
     res.status(200).json({ upcomming, completed });
   } catch (error) {

@@ -1,11 +1,30 @@
 const UserModel = require("../models/user.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const ParentModel = require("../models/parent.model.js");
+const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
+const notificationModel = require("../models/notification.model.js");
 
 exports.block_unblock_user = async (req, res, next) => {
   try {
     const { user_type, status, id } = req.body;
     await UserModel.updateOne({ _id: id }, { $set: { active: status } });
+
+    // let filtered_tokens = await filteredFCMTokens(id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `${status} by Admin`,
+    //     body: `Your Profile is ${status} by Admin.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: id,
+      type: "view",
+      title: `${status} by Admin`,
+      body: `Your Profile is ${status} by Admin.`,
+      status: "unread",
+    })
 
     // send email
     res.status(200).json({

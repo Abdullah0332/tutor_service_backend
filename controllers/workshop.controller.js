@@ -1,9 +1,14 @@
+const {
+  filteredFCMTokens,
+  sendNotification
+} = require("../libraries/pushNotification");
+const UserModel = require("../models/user.model.js");
 const WorkshopModel = require("../models/workship.model");
 const WorkshopRegistrationModel = require("../models/workshopRegistration.model");
 const { create_workshop_service } = require("../services/workshop.service");
 const {
   create_workshop_validator,
-  register_workshop_validator,
+  register_workshop_validator
 } = require("../validators/workshop.validation");
 
 // ---------------------------------------------------------------
@@ -19,7 +24,7 @@ exports.create_workshop = async (req, res, next) => {
       language_of_workshop,
       organizer_name,
       online_workshop,
-      contact_information,
+      contact_information
     } = req.body;
     const { isValid, errors } = await create_workshop_validator(req.body);
 
@@ -39,8 +44,25 @@ exports.create_workshop = async (req, res, next) => {
       organizer_name,
       online_workshop,
       contact_information,
-      gallery: galleryImages || [],
+      gallery: galleryImages || []
     });
+
+    // let filtered_tokens = await filteredFCMTokens(req.user._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Workshop Created`,
+    //     body: `Workshop ${title} Created Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Workshop Created`,
+      body: `Workshop ${title} Created Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json(workshop);
   } catch (error) {
@@ -96,6 +118,25 @@ exports.update_workshop = async (req, res, next) => {
     await workshop.save();
 
     let data = await WorkshopModel.findOne({ _id: id });
+
+    // let filtered_tokens = await filteredFCMTokens(req.user._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Workshop Updated`,
+    //     body: `Workshop ${data?.title} Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req.user._id,
+      type: "view",
+      title: `Workshop Updated`,
+      body: `Workshop ${data?.title} Updated Successfully.`,
+      status: "unread",
+    })
+
+
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -135,12 +176,12 @@ exports.register_on_workshop = async (req, res, next) => {
 
     const alreadyRegister = await WorkshopRegistrationModel.findOne({
       email,
-      workshop_id,
+      workshop_id
     });
 
     if (alreadyRegister) {
       return res.status(404).json({
-        message: "User with this email already registered on this workshop.",
+        message: "User with this email already registered on this workshop."
       });
     }
 
@@ -151,7 +192,7 @@ exports.register_on_workshop = async (req, res, next) => {
       cvv,
       email,
       workshop_id,
-      payment_status: "paid",
+      payment_status: "paid"
     });
 
     let workshop = await WorkshopModel.findOne({ _id: workshop_id });
@@ -159,6 +200,26 @@ exports.register_on_workshop = async (req, res, next) => {
     workshop.registration_ids.push(data._id);
     workshop.total_seats_available--;
     await workshop.save();
+
+    //  const user = await UserModel.findOne({
+    //   email: email.toLowerCase()
+    // });
+    // let filtered_tokens = await filteredFCMTokens(user._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `User Registered on Workshop`,
+    //     body: `User ${email} Registered on Workshop ${workshop?.title}.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: user._id,
+      type: "view",
+      title: `User Registered on Workshop`,
+      body: `User ${email} Registered on Workshop ${workshop?.title}.`,
+      status: "unread",
+    })
 
     res.status(200).json(data);
   } catch (error) {

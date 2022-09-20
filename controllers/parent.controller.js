@@ -1,10 +1,11 @@
 const UserModel = require("../models/user.model.js");
 const ParentModel = require("../models/parent.model.js");
-
 const {
   update_parent_profile_service,
 } = require("../services/parent.service.js");
 const PaymentModel = require("../models/payment.model.js");
+const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
+const notificationModel = require("../models/notification.model.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE PARENT PROFILE -----------------------------
@@ -25,6 +26,23 @@ exports.update_parent_profile = async (req, res, next) => {
     );
 
     const data = await ParentModel.findOne({ user_id: req?.user?._id });
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Profile Updated`,
+    //     body: `Profile Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Profile Updated`,
+      body: `Profile Updated Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json(data);
   } catch (error) {
@@ -70,6 +88,23 @@ exports.add_kid = async (req, res, next) => {
     await user.save();
     await parent.save();
 
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Kid Added`,
+    //     body: `Kid Added Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Kid Added`,
+      body: `Kid Added Successfully.`,
+      status: "unread",
+    })
+
     res.status(200).json({ message: "Kid Add Successfully!!!" });
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -94,6 +129,23 @@ exports.remove_kid = async (req, res, next) => {
     );
     parent.kids = updated_kids;
     await parent.save();
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Kid Removed`,
+    //     body: `Kid Removed Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Kid Removed`,
+      body: `Kid Removed Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json({ message: "Kid Removed Successfully!!!" });
   } catch (error) {
@@ -138,6 +190,23 @@ exports.update_kid = async (req, res, next) => {
         },
       }
     );
+
+    // let filtered_tokens = await filteredFCMTokens(req?.user?._id);
+    // if (filtered_tokens?.length > 0) {
+    //   await sendNotification({
+    //     title: `Kid Updated`,
+    //     body: `Kid Updated Successfully.`,
+    //     userTokens: filtered_tokens
+    //   });
+    // }
+
+    await notificationModel.create({
+      user_id: req?.user?._id,
+      type: "view",
+      title: `Kid Updated`,
+      body: `Kid Updated Successfully.`,
+      status: "unread",
+    })
 
     res.status(200).json({ message: "Kid Updated Successfully!!!" });
   } catch (error) {
