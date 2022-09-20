@@ -19,6 +19,9 @@ const {
   get_all_payment_method,
   socialLogin,
   dashboard_counts,
+  get_user_notifications,
+  get_user_unread_notifications,
+  update_notification
 } = require("../controllers/auth.controller.js");
 
 const router = express.Router();
@@ -67,5 +70,23 @@ router.get(
   get_all_payment_method
 );
 router.get("/dashboard-counts", sanitizeData, auth, dashboard_counts);
+router.get(
+  "/get-user-notifications",
+  sanitizeData,
+  auth,
+  get_user_notifications
+);
+router.get(
+  "/get-user-unread-notifications",
+  sanitizeData,
+  auth,
+  get_user_unread_notifications
+);
+router.put(
+  "/update-notification-status/:id",
+  sanitizeData,
+  auth,
+  update_notification
+);
 
 module.exports = router;
