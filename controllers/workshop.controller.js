@@ -2,6 +2,7 @@ const {
   filteredFCMTokens,
   sendNotification
 } = require("../libraries/pushNotification");
+const notificationModel = require("../models/notification.model");
 const UserModel = require("../models/user.model.js");
 const WorkshopModel = require("../models/workship.model");
 const WorkshopRegistrationModel = require("../models/workshopRegistration.model");

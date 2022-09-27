@@ -11,6 +11,7 @@ const {
   update_tutor_profile_service,
 } = require("../services/tutor.service.js");
 const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
+const notificationModel = require("../models/notification.model.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE TUTOR PROFILE -----------------------------

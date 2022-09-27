@@ -2,6 +2,7 @@ const UserModel = require("../models/user.model.js");
 const ParentModel = require("../models/parent.model.js");
 const TutorModel = require("../models/tutor.model.js");
 const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
+const notificationModel = require("../models/notification.model.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE USER NAME -----------------------------
