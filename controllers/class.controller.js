@@ -154,7 +154,7 @@ exports.new_announcement = async (req, res, next) => {
       files: files_path,
     });
 
-    // const single_class = await ClassModel.findOne({_id: announcement?.class_id})
+    const single_class = await ClassModel.findOne({_id: announcement?.class_id})
     // let filtered_tokens = await filteredFCMTokens(announcement?.user_id);
     // if (filtered_tokens?.length > 0) {
     //   await sendNotification({
