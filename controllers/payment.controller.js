@@ -43,30 +43,40 @@ exports.payment_intent = async (req, res, next) => {
 // --------------------- CHECKOUT -----------------------------
 // ---------------------------------------------------------------
 exports.checkout = async (req, res, next) => {
-   request(function(responseData) {
-    res.json(responseData);
-  });
+  try {
+    const { amount } = req.body;
+    if (!amount) return res.status(404).json({ message: "Amount is required" });
+    let data = await checkoutRequest(amount);
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send(err?.response?.data?.message);
+  }
 };
 
 // ---------------------------------------------------------------
 // --------------------- CHECKOUT RESULT -----------------------------
 // ---------------------------------------------------------------
 exports.checkout_result = async (req, res, next) => {
-   resultRequest(req.body.resourcePath, function(responseData) {
-    res.json(responseData);
-  });
+  try {
+    resultRequest(req.body.resourcePath, function (responseData) {
+      res.status(200).send(responseData);
+    });
+  } catch (err) {
+    res.status(500).send(err?.response?.data?.message);
+  }
 };
 
-
-function request(callback) {
-  var path = "/v1/checkouts";
-  var data = querystring.stringify({
-    entityId: "8ac7a4c984364a1a01843d5034aa23da",
-    amount: "92.00",
+const checkoutRequest = async (amount) => {
+  const path = "/v1/checkouts";
+  const data = querystring.stringify({
+    entityId: config.HYPERPAY_ENTITY_ID,
+    amount,
     currency: config.HYPERPAY_CURRENCY,
     paymentType: config.HYPERPAY_PAYMENT_TYPE,
+    "customer.givenName": "Muhammad Abdullah Khan",
+    "customer.email": "ab@gmail.com"
   });
-  var options = {
+  const options = {
     port: 443,
     host: "eu-test.oppwa.com",
     path: path,
@@ -74,41 +84,50 @@ function request(callback) {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Content-Length": data.length,
-      Authorization:
-        `Bearer ${config.HYPERPAY_BEARER_TOKEN}`,
-    },
+      Authorization: `Bearer ${config.HYPERPAY_BEARER_TOKEN}`
+    }
   };
-  var postRequest = https.request(options, function(res) {
-    res.setEncoding("utf8");
-    res.on("data", function(chunk) {
-      jsonRes = JSON.parse(chunk);
-      return callback(jsonRes);
+  return new Promise((resolve, reject) => {
+    const postRequest = https.request(options, function (res) {
+      const buf = [];
+      res.on("data", (chunk) => {
+        buf.push(Buffer.from(chunk));
+      });
+      res.on("end", () => {
+        const jsonString = Buffer.concat(buf).toString("utf8");
+        try {
+          resolve(JSON.parse(jsonString));
+        } catch (error) {
+          reject(error);
+        }
+      });
     });
+    postRequest.on("error", reject);
+    postRequest.write(data);
+    postRequest.end();
   });
-  postRequest.write(data);
-  postRequest.end();
-}
+};
 
 function resultRequest(resourcePath, callback) {
   var path = resourcePath;
-  path += "?entityId=8ac7a4c984364a1a01843d5034aa23da";
+  path += `?entityId=${config.HYPERPAY_ENTITY_ID}`;
   const url = "https://eu-test.oppwa.com" + path;
   axios
     .get(url, {
       headers: {
-        Authorization:
-           `Bearer ${config.HYPERPAY_BEARER_TOKEN}`,
-      },
+        Authorization: `Bearer ${config.HYPERPAY_BEARER_TOKEN}`
+      }
     })
-    .then(function(response) {
+    .then(function (response) {
       try {
         resDate = JSON.parse(response);
       } catch (e) {
         resData = response;
       }
+
       return callback(resData.data);
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(error);
     });
 }

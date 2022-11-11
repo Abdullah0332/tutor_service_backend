@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get("/publish-key", sanitizeData, auth, publish_key);
 router.post("/pay", sanitizeData, auth, payment_intent);
-router.get("/checkout", sanitizeData, checkout);
-router.get("/checkout-result", sanitizeData, checkout_result);
+router.post("/checkout", sanitizeData, checkout);
+router.post("/checkout-result", sanitizeData, checkout_result);
 
 module.exports = router;
