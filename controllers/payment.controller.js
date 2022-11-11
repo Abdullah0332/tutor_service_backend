@@ -44,9 +44,9 @@ exports.payment_intent = async (req, res, next) => {
 // ---------------------------------------------------------------
 exports.checkout = async (req, res, next) => {
   try {
-    const { amount } = req.body;
+    const { amount, email, user_name } = req.body;
     if (!amount) return res.status(404).json({ message: "Amount is required" });
-    let data = await checkoutRequest(amount);
+    let data = await checkoutRequest(amount, email, user_name);
     res.status(200).send(data);
   } catch (err) {
     res.status(500).send(err?.response?.data?.message);
@@ -66,19 +66,19 @@ exports.checkout_result = async (req, res, next) => {
   }
 };
 
-const checkoutRequest = async (amount) => {
+const checkoutRequest = async (amount, email, user_name) => {
   const path = "/v1/checkouts";
   const data = querystring.stringify({
     entityId: config.HYPERPAY_ENTITY_ID,
     amount,
     currency: config.HYPERPAY_CURRENCY,
     paymentType: config.HYPERPAY_PAYMENT_TYPE,
-    "customer.givenName": "Muhammad Abdullah Khan",
-    "customer.email": "ab@gmail.com"
+    "customer.givenName": user_name,
+    "customer.email": email
   });
   const options = {
     port: 443,
-    host: "eu-test.oppwa.com",
+    host: config.HYPERPAY_HOST,
     path: path,
     method: "POST",
     headers: {
@@ -111,7 +111,7 @@ const checkoutRequest = async (amount) => {
 function resultRequest(resourcePath, callback) {
   var path = resourcePath;
   path += `?entityId=${config.HYPERPAY_ENTITY_ID}`;
-  const url = "https://eu-test.oppwa.com" + path;
+  const url = `https://${config.HYPERPAY_HOST}` + path;
   axios
     .get(url, {
       headers: {
