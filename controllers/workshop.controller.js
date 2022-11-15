@@ -11,6 +11,11 @@ const {
   create_workshop_validator,
   register_workshop_validator
 } = require("../validators/workshop.validation");
+const {
+  create_workshop_email,
+  user_register_workshop_email,
+  workshop_creater_workshop_email
+} = require("../libraries/emails/email.sender.js");
 
 // ---------------------------------------------------------------
 // --------------------- CREATE WORKSHOP -----------------------------
@@ -62,8 +67,15 @@ exports.create_workshop = async (req, res, next) => {
       type: "view",
       title: `Workshop Created`,
       body: `Workshop ${title} Created Successfully.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
+
+    await create_workshop_email({
+      email: req.user.email,
+      subject: "Workshop Created",
+      body: `Workshop ${title} Created Successfully.`,
+      name: `${req?.user?.first_name} ${req?.user?.last_name}`
+    });
 
     res.status(200).json(workshop);
   } catch (error) {
@@ -134,9 +146,8 @@ exports.update_workshop = async (req, res, next) => {
       type: "view",
       title: `Workshop Updated`,
       body: `Workshop ${data?.title} Updated Successfully.`,
-      status: "unread",
-    })
-
+      status: "unread"
+    });
 
     res.status(200).json(data);
   } catch (error) {
@@ -196,7 +207,9 @@ exports.register_on_workshop = async (req, res, next) => {
       payment_status: "paid"
     });
 
-    let workshop = await WorkshopModel.findOne({ _id: workshop_id });
+    let workshop = await WorkshopModel.findOne({ _id: workshop_id }).populate(
+      "user_id"
+    );
     workshop.emails.push(email);
     workshop.registration_ids.push(data._id);
     workshop.total_seats_available--;
@@ -219,8 +232,20 @@ exports.register_on_workshop = async (req, res, next) => {
       type: "view",
       title: `User Registered on Workshop`,
       body: `User ${email} Registered on Workshop ${workshop?.title}.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
+
+    await user_register_workshop_email({
+      email: email,
+      subject: `Registered on Workshop.`,
+      body: `You Successfully registered on Workshop ${workshop?.title} with email ${email}.`
+    });
+
+    await workshop_creater_workshop_email({
+      email: workshop.user_id.email,
+      subject: `User Registered on Workshop`,
+      body: `User ${email} Registered on Workshop ${workshop?.title}.`
+    });
 
     res.status(200).json(data);
   } catch (error) {

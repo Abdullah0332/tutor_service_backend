@@ -7,8 +7,17 @@ const { delete_file } = require("../middlewares/multer");
 const moment = require("moment");
 const ParentModel = require("../models/parent.model");
 const PaymentModel = require("../models/payment.model");
-const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification");
+const {
+  filteredFCMTokens,
+  sendNotification
+} = require("../libraries/pushNotification");
 const notificationModel = require("../models/notification.model");
+const {
+  new_announcement_email,
+  new_comment_email,
+  new_review_user_email,
+  new_review_tutor_email
+} = require("../libraries/emails/email.sender.js");
 
 // ---------------------------------------------------------------
 // --------------------- GET UPCOMMING CLASSES -----------------------------
@@ -67,8 +76,8 @@ exports.update_class = async (req, res, next) => {
       type: "view",
       title: `Class Updated`,
       body: `Class ${updated_class?.name} Updated Successfully.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
 
     res.status(200).json(updated_class);
   } catch (error) {
@@ -88,7 +97,7 @@ exports.get_single_class = async (req, res, next) => {
     );
 
     let allClassesKids = await ParentModel.find({
-      "kids._id": { $in: single_class.kids },
+      "kids._id": { $in: single_class.kids }
     }).select("kids");
     allClassesKids?.map((el) =>
       el.kids.map(
@@ -123,7 +132,7 @@ exports.get_user_classes = async (req, res, next) => {
     for (let i = 0; i < classes.length; i++) {
       let allKids = [];
       let allClassesKids = await ParentModel.find({
-        "kids._id": { $in: classes[i].kids },
+        "kids._id": { $in: classes[i].kids }
       }).select("kids");
       allClassesKids?.map((el) =>
         el.kids.map(
@@ -151,10 +160,12 @@ exports.new_announcement = async (req, res, next) => {
       user_id: req?.user?.id,
       class_id,
       message,
-      files: files_path,
+      files: files_path
     });
 
-    const single_class = await ClassModel.findOne({_id: announcement?.class_id})
+    const single_class = await ClassModel.findOne({ _id: class_id }).populate(
+      "kids"
+    );
     // let filtered_tokens = await filteredFCMTokens(announcement?.user_id);
     // if (filtered_tokens?.length > 0) {
     //   await sendNotification({
@@ -169,8 +180,19 @@ exports.new_announcement = async (req, res, next) => {
       type: "view",
       title: `Announcement Created`,
       body: `Announcement in Class ${single_class?.name} Created Successfully.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
+
+    let emails = [
+      req.user.email,
+      ...single_class?.kids?.map((el) => el?.email)
+    ];
+
+    await new_announcement_email({
+      email: emails || [],
+      subject: "New Announcement",
+      body: `Tutor ${req?.user?.first_name} ${req?.user?.last_name} just create new announcement in Class ${single_class.name}.`,
+    });
 
     res.status(200).json(announcement);
   } catch (error) {
@@ -200,7 +222,7 @@ exports.get_announcement_by_class_id = async (req, res, next) => {
   try {
     const { id } = req.params;
     const announcement = await AnnouncementModel.findOne({
-      class_id: id,
+      class_id: id
     }).populate("user_id class_id");
     res.status(200).json(announcement);
   } catch (error) {
@@ -280,8 +302,8 @@ exports.new_comment = async (req, res, next) => {
       { _id: id },
       {
         $set: {
-          comments: announcement_comments,
-        },
+          comments: announcement_comments
+        }
       }
     );
 
@@ -303,8 +325,15 @@ exports.new_comment = async (req, res, next) => {
       type: "view",
       title: `New Message`,
       body: `You have a new comment in announcement of class ${updated_announcement?.class_id?.name}`,
-      status: "unread",
-    })
+      status: "unread"
+    });
+
+    await new_comment_email({
+      email: announcement.user_id?.email,
+      subject: "New Message",
+      body: `You have a new comment in announcement of class ${updated_announcement?.class_id?.name}`,
+      name: `${req?.user?.first_name} ${req?.user?.last_name}`
+    });
 
     res.status(200).json(updated_announcement);
   } catch (error) {
@@ -319,7 +348,7 @@ exports.delete_comment = async (req, res, next) => {
   try {
     const { comment_id: id, announcement_id } = req.query;
     const announcement = await AnnouncementModel.findOne({
-      "comments._id": id,
+      "comments._id": id
     });
 
     const commentExists = announcement?.comments?.find(
@@ -359,7 +388,7 @@ exports.place_review = async (req, res, next) => {
     const class_doc = await ClassModel.findById(class_id);
     if (class_doc?.reviewed_by?.includes(req?.user?.id))
       return res.status(404).send({
-        message: "This user already place review aganist this class.",
+        message: "This user already place review aganist this class."
       });
     class_doc?.reviewed_by.push(req?.user?._id);
     const tutor = await TutorModel.findOne({ user_id: class_doc?.tutor_id });
@@ -373,7 +402,7 @@ exports.place_review = async (req, res, next) => {
       user_id: req?.user?._id,
       // username: `${req?.user?.first_name} ${req?.user?.last_name}`,
       rating,
-      comment,
+      comment
       // files,
     });
 
@@ -386,7 +415,7 @@ exports.place_review = async (req, res, next) => {
     await tutor.save();
 
     const updated_tutor = await TutorModel.findOne({
-      user_id: class_doc?.tutor_id,
+      user_id: class_doc?.tutor_id
     }).populate("user_id reviews.user_id");
 
     // let user_filtered_tokens = await filteredFCMTokens(req?.user?._id);
@@ -412,16 +441,30 @@ exports.place_review = async (req, res, next) => {
       type: "view",
       title: `Review Placed`,
       body: `Review Placed Successfully.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
 
     await notificationModel.create({
       user_id: class_doc?.tutor_id,
       type: "view",
       title: `Review Placed`,
       body: `${req?.user?.first_name} ${req?.user?.last_name} Place a review against your profile.`,
-      status: "unread",
-    })
+      status: "unread"
+    });
+
+    await new_review_user_email({
+      email: req.user.email,
+      subject: "Review Placed",
+      body: `Review Placed Successfully on class ${class_doc?.name}`,
+      name: `${req?.user?.first_name} ${req?.user?.last_name}`
+    });
+
+    await new_review_tutor_email({
+      email: tutor.email,
+      subject: "Review Placed",
+      body: `${req?.user?.first_name} ${req?.user?.last_name} Place a review against your profile.`,
+      name: `${req?.user?.first_name} ${req?.user?.last_name}`
+    });
 
     res.status(200).json(updated_tutor);
   } catch (error) {

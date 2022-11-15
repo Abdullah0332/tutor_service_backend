@@ -8,7 +8,7 @@ const classSchema = mongoose.Schema(
     tutor_id: { type: mongoose.Types.ObjectId, ref: "User" },
     slotId: { type: mongoose.Types.ObjectId },
     slot_time: { type: Date },
-    kids: [{ type: mongoose.Types.ObjectId }],
+    kids: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     user_type: { type: String },
     class_location: { type: String },
     selected_pkg: { type: Number },
@@ -20,7 +20,7 @@ const classSchema = mongoose.Schema(
     completed: { type: Boolean, default: false },
     reviewed_by: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     start_time: { type: Date },
-    end_time: { type: Date },
+    end_time: { type: Date }
   },
   { timestamps: true }
 );

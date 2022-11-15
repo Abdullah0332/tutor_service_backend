@@ -14,7 +14,10 @@ const {
 } = require("../validators/auth.validations.js");
 const { randomOTP } = require("../libraries/utils.js");
 const {
-  forgot_password_email
+  forgot_password_email,
+  add_payment_method_email,
+  update_payment_method_email,
+  remove_payment_method_email
 } = require("../libraries/emails/email.sender.js");
 const {
   sendNotification,
@@ -464,6 +467,13 @@ exports.add_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
+    await add_payment_method_email({
+      email: user?.email,
+      subject: "Payment Method Added",
+      body: "New Payment Method Added Successfully.",
+      name: `${user?.first_name} ${user?.last_name}`
+    });
+
     res.status(200).json({ message: "Payment Method Added Successfully" });
   } catch (error) {
     console.log(error);
@@ -522,6 +532,13 @@ exports.update_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
+    await update_payment_method_email({
+      email: user?.email,
+      subject: "Payment Method Updated",
+      body: "Payment Method Updated Successfully.",
+      name: `${user?.first_name} ${user?.last_name}`
+    });
+
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -573,6 +590,13 @@ exports.remove_payment_method = async (req, res, next) => {
       title: "Payment Method Removed",
       body: `Payment Method Removed Successfully.`,
       status: "unread"
+    });
+
+    await remove_payment_method_email({
+      email: user?.email,
+      subject: "Payment Method Updated",
+      body: "Payment Method Removed Successfully.",
+      name: `${user?.first_name} ${user?.last_name}`
     });
 
     res.status(200).json({ message: "Payment Method Removed Successfully" });
@@ -671,11 +695,13 @@ exports.update_notification = async (req, res, next) => {
   try {
     await NotificationModel.updateOne(
       {
-        _id: req.params.id,
+        _id: req.params.id
       },
       { $set: { status: req.body.status } }
     );
-    res.status(200).json({message: "Notification Stratus Updated Successfully"});
+    res
+      .status(200)
+      .json({ message: "Notification Stratus Updated Successfully" });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
