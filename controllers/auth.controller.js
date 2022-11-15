@@ -15,9 +15,6 @@ const {
 const { randomOTP } = require("../libraries/utils.js");
 const {
   forgot_password_email,
-  add_payment_method_email,
-  update_payment_method_email,
-  remove_payment_method_email
 } = require("../libraries/emails/email.sender.js");
 const {
   sendNotification,
@@ -467,13 +464,6 @@ exports.add_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
-    await add_payment_method_email({
-      email: user?.email,
-      subject: "Payment Method Added",
-      body: "New Payment Method Added Successfully.",
-      name: `${user?.first_name} ${user?.last_name}`
-    });
-
     res.status(200).json({ message: "Payment Method Added Successfully" });
   } catch (error) {
     console.log(error);
@@ -532,12 +522,6 @@ exports.update_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
-    await update_payment_method_email({
-      email: user?.email,
-      subject: "Payment Method Updated",
-      body: "Payment Method Updated Successfully.",
-      name: `${user?.first_name} ${user?.last_name}`
-    });
 
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
@@ -592,12 +576,7 @@ exports.remove_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
-    await remove_payment_method_email({
-      email: user?.email,
-      subject: "Payment Method Updated",
-      body: "Payment Method Removed Successfully.",
-      name: `${user?.first_name} ${user?.last_name}`
-    });
+
 
     res.status(200).json({ message: "Payment Method Removed Successfully" });
   } catch (error) {

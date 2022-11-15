@@ -12,12 +12,7 @@ const {
   sendNotification
 } = require("../libraries/pushNotification");
 const notificationModel = require("../models/notification.model");
-const {
-  new_announcement_email,
-  new_comment_email,
-  new_review_user_email,
-  new_review_tutor_email
-} = require("../libraries/emails/email.sender.js");
+
 
 // ---------------------------------------------------------------
 // --------------------- GET UPCOMMING CLASSES -----------------------------
@@ -163,9 +158,7 @@ exports.new_announcement = async (req, res, next) => {
       files: files_path
     });
 
-    const single_class = await ClassModel.findOne({ _id: class_id }).populate(
-      "kids"
-    );
+    const single_class = await ClassModel.findOne({ _id: class_id })
     // let filtered_tokens = await filteredFCMTokens(announcement?.user_id);
     // if (filtered_tokens?.length > 0) {
     //   await sendNotification({
@@ -183,16 +176,6 @@ exports.new_announcement = async (req, res, next) => {
       status: "unread"
     });
 
-    let emails = [
-      req.user.email,
-      ...single_class?.kids?.map((el) => el?.email)
-    ];
-
-    await new_announcement_email({
-      email: emails || [],
-      subject: "New Announcement",
-      body: `Tutor ${req?.user?.first_name} ${req?.user?.last_name} just create new announcement in Class ${single_class.name}.`,
-    });
 
     res.status(200).json(announcement);
   } catch (error) {
@@ -328,12 +311,6 @@ exports.new_comment = async (req, res, next) => {
       status: "unread"
     });
 
-    await new_comment_email({
-      email: announcement.user_id?.email,
-      subject: "New Message",
-      body: `You have a new comment in announcement of class ${updated_announcement?.class_id?.name}`,
-      name: `${req?.user?.first_name} ${req?.user?.last_name}`
-    });
 
     res.status(200).json(updated_announcement);
   } catch (error) {
@@ -452,19 +429,7 @@ exports.place_review = async (req, res, next) => {
       status: "unread"
     });
 
-    await new_review_user_email({
-      email: req.user.email,
-      subject: "Review Placed",
-      body: `Review Placed Successfully on class ${class_doc?.name}`,
-      name: `${req?.user?.first_name} ${req?.user?.last_name}`
-    });
 
-    await new_review_tutor_email({
-      email: tutor.email,
-      subject: "Review Placed",
-      body: `${req?.user?.first_name} ${req?.user?.last_name} Place a review against your profile.`,
-      name: `${req?.user?.first_name} ${req?.user?.last_name}`
-    });
 
     res.status(200).json(updated_tutor);
   } catch (error) {

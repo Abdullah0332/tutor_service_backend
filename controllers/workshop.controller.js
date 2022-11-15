@@ -11,11 +11,7 @@ const {
   create_workshop_validator,
   register_workshop_validator
 } = require("../validators/workshop.validation");
-const {
-  create_workshop_email,
-  user_register_workshop_email,
-  workshop_creater_workshop_email
-} = require("../libraries/emails/email.sender.js");
+
 
 // ---------------------------------------------------------------
 // --------------------- CREATE WORKSHOP -----------------------------
@@ -70,12 +66,7 @@ exports.create_workshop = async (req, res, next) => {
       status: "unread"
     });
 
-    await create_workshop_email({
-      email: req.user.email,
-      subject: "Workshop Created",
-      body: `Workshop ${title} Created Successfully.`,
-      name: `${req?.user?.first_name} ${req?.user?.last_name}`
-    });
+ 
 
     res.status(200).json(workshop);
   } catch (error) {
@@ -233,18 +224,6 @@ exports.register_on_workshop = async (req, res, next) => {
       title: `User Registered on Workshop`,
       body: `User ${email} Registered on Workshop ${workshop?.title}.`,
       status: "unread"
-    });
-
-    await user_register_workshop_email({
-      email: email,
-      subject: `Registered on Workshop.`,
-      body: `You Successfully registered on Workshop ${workshop?.title} with email ${email}.`
-    });
-
-    await workshop_creater_workshop_email({
-      email: workshop.user_id.email,
-      subject: `User Registered on Workshop`,
-      body: `User ${email} Registered on Workshop ${workshop?.title}.`
     });
 
     res.status(200).json(data);
