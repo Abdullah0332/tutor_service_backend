@@ -1,14 +1,44 @@
 <%- include('include/head.ejs')%>
-<div>
-  <!-- paragraph or text div -->
-  <h1>Hello,</h1>
-  <br />
-  <%= body %><br /><br /><br />
-  <div style="font-size: 25px; font-weight: 900"><%= paramsKey %></div>
-  <br /><br />
-  If you need further assistance, please contact our Help team.
-  <br /><br />Thanks,
-  <br />
-  TutorService Team
+
+<div style="margin-top: 20px; margin-bottom: 60px">
+  <h3
+    style="
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #080226;
+      text-transform: capitalize;
+    ">
+    Please Confirm Your Email Address
+  </h3>
+</div>
+<div style="text-align: left; margin-bottom: 60px">
+  <p
+    style="
+      margin: 0;
+      font-size: 14px;
+      color: #363131;
+      letter-spacing: 0.5px;
+      line-height: 1.7;
+    ">
+    <span style="font-weight: 500">Hello</span>
+    <br />
+    <%= body %><br />
+  </p>
+</div>
+<div style="text-align: center; margin-bottom: 80px">
+  <span
+    style="
+      text-transform: capitalize;
+      text-decoration: none;
+      background-color: #efc282;
+      border-radius: 10px;
+      padding: 15px 36px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #080226;
+    ">
+    <a href="<%= paramsKey %>"> Confirm your email address </a>
+  </span>
 </div>
 <%- include('include/end.ejs')%>
