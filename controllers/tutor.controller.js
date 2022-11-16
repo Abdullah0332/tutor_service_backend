@@ -173,6 +173,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       user_id: id,
     }).populate("user_id");
 
+    const tutor_details = await TutorModel.findOne({_id: req?.params?.id})
     // let user_filtered_tokens = await filteredFCMTokens(req?.user?.id);
     // if (user_filtered_tokens?.length > 0) {
     //   await sendNotification({
@@ -206,6 +207,19 @@ exports.update_tutor_schedule = async (req, res, next) => {
       body: `User ${req?.user?.first_name} ${req?.user?.last_name} Booked Class ${new_class?.title}.`,
       status: "unread",
     })
+
+    await class_booking_email_user({
+      email: email,
+      subject: "Your lesson has been booked!",
+      body: `Your ${new_class?.title} lesson with ${tutor_details?.first_name} ${tutor_details?.last_name} has been booked on date/time. We will notify you an hour in advance.`
+    });
+
+    await class_booking_email_tutor({
+      email: email,
+      subject: "Your lesson has been booked!",
+      body: `Your ${new_class?.title} lesson with ${req?.user?.first_name} ${req?.user?.last_name} has been booked on date/time. We will notify you an hour in advance.`
+    });
+
 
     res.status(200).json(updated_tutor_profile);
   } catch (error) {

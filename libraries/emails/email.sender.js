@@ -29,6 +29,57 @@ const forgot_password_email = async options => {
   await transporter.sendMail(data);
 };
 
+const verify_email = async options => {
+  const emailTemplate = await ejs.renderFile(
+    __dirname + "/email_templates/verify_email.ejs",
+    { name: options.name, body: options.body, paramsKey: options.paramsKey }
+  );
+
+  const data = {
+    to: options.email,
+    from: `${config.SENDING_EMAIL} Tutor Service`,
+    subject: options.subject,
+    html: emailTemplate
+  };
+
+  await transporter.sendMail(data);
+};
+
+const class_booking_email_user = async options => {
+  const emailTemplate = await ejs.renderFile(
+    __dirname + "/email_templates/body.ejs",
+    { body: options.body }
+  );
+
+  const data = {
+    to: options.email,
+    from: `${config.SENDING_EMAIL} Tutor Service`,
+    subject: options.subject,
+    html: emailTemplate
+  };
+
+  await transporter.sendMail(data);
+};
+
+const class_booking_email_tutor = async options => {
+  const emailTemplate = await ejs.renderFile(
+    __dirname + "/email_templates/body.ejs",
+    { body: options.body }
+  );
+
+  const data = {
+    to: options.email,
+    from: `${config.SENDING_EMAIL} Tutor Service`,
+    subject: options.subject,
+    html: emailTemplate
+  };
+
+  await transporter.sendMail(data);
+};
+
 module.exports = {
-  forgot_password_email
+  forgot_password_email,
+  verify_email,
+  class_booking_email_user,
+  class_booking_email_tutor
 };

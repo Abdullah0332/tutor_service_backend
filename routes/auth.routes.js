@@ -21,7 +21,9 @@ const {
   dashboard_counts,
   get_user_notifications,
   get_user_unread_notifications,
-  update_notification
+  update_notification,
+  verify_email,
+  resend_verify_email_token
 } = require("../controllers/auth.controller.js");
 
 const router = express.Router();
@@ -31,6 +33,12 @@ router.post("/social-login", auth, socialLogin);
 router.post("/login", sanitizeData, login);
 router.get("/me", auth, me);
 router.put("/forgot-password", sanitizeData, forgot_password);
+router.post(
+  "/resend-verify-email-token",
+  sanitizeData,
+  resend_verify_email_token
+);
+router.get("/verify-email/:token", sanitizeData, verify_email);
 router.put("/otp-verify", sanitizeData, otp_verify);
 router.put("/reset-password", sanitizeData, reset_password);
 router.get("/refresh-token", auth, refresh_token);

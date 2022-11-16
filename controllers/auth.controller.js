@@ -15,11 +15,14 @@ const {
 const { randomOTP } = require("../libraries/utils.js");
 const {
   forgot_password_email,
+  verify_email
 } = require("../libraries/emails/email.sender.js");
 const {
   sendNotification,
   filteredFCMTokens
 } = require("../libraries/pushNotification.js");
+
+const crypto = require("crypto");
 
 // ---------------------------------------------------------------
 // --------------------- SIGN UP -----------------------------
@@ -63,7 +66,27 @@ exports.sign_up = async (req, res, next) => {
 
     const token = user.getJwtToken();
 
-    res.status(201).json({ ...user.toObject(), token });
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset password url
+    const paramsKey = `http://localhost:5000/api/auth/verify-email/${resetToken}`;
+
+    await verify_email({
+      email: email,
+      subject: "Please Verify Your Email Address",
+      body: `Welcome${
+        user_type === "tutor" ? " to (tutor service) Family" : ""
+      }! We are excited to have you get started. First, you need to confirm your account. Just press the button below.`,
+      paramsKey
+    });
+
+    res.status(201).json({
+      ...user.toObject(),
+      token,
+      message: `Email send to ${email}, Kindly verify your email.`
+    });
   } catch (error) {
     res.status(500).json({ message: error?.message });
   }
@@ -88,6 +111,9 @@ exports.login = async (req, res, next) => {
 
     if (user?.status === "blocked")
       return res.status(404).json({ message: "User is blocked by admin." });
+
+    if (user?.email_verified)
+      return res.status(404).json({ message: "Please Verify your email." });
 
     const token = user.getJwtToken();
 
@@ -330,6 +356,83 @@ exports.reset_password = async (req, res, next) => {
 };
 
 // ---------------------------------------------------------------
+// --------------------- RESEND VERIFY EMAIL TOKEN -----------------------------
+// ---------------------------------------------------------------
+exports.resend_verify_email_token = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(404).send({
+        message: "Email is required."
+      });
+    }
+    const user = await UserModel.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).send({
+        message: "User againsts this email not exits, Kindly sign up first."
+      });
+    }
+    if (user.email_verified) {
+      return res.status(404).send({
+        message: "User email already verified."
+      });
+    }
+
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset password url
+    const paramsKey = `http://localhost:5000/api/auth/verify-email/${resetToken}`;
+
+    await verify_email({
+      email: email,
+      subject: "Please Verify Your Email Address",
+      body: `Welcome${
+        user.user_type === "tutor" ? " to (tutor service) Family" : ""
+      }! We are excited to have you get started. First, you need to confirm your account. Just press the button below.`,
+      paramsKey
+    });
+
+    res.status(200).json({
+      message: `Email send to ${email}, Kindly verify your email.`
+    });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
+// --------------------- VERIFY EMAIL -----------------------------
+// ---------------------------------------------------------------
+exports.verify_email = async (req, res, next) => {
+  try {
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await UserModel.findOne({
+      resetPasswordToken
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Password Reset Token is Invalid or has been Expired"
+      });
+    }
+
+    user.email_verified = true;
+    await user.save();
+
+    res.status(200).json({ message: "Email Verified." });
+  } catch (error) {
+    res.status(500).json({ message: error?.message });
+  }
+};
+
+// ---------------------------------------------------------------
 // --------------------- REFRESH TOKEN -----------------------------
 // ---------------------------------------------------------------
 exports.refresh_token = async (req, res, next) => {
@@ -522,7 +625,6 @@ exports.update_payment_method = async (req, res, next) => {
       status: "unread"
     });
 
-
     res.status(200).json({ message: "Payment Method Updated Successfully" });
   } catch (error) {
     res.status(500).json({ message: error?.message });
@@ -575,8 +677,6 @@ exports.remove_payment_method = async (req, res, next) => {
       body: `Payment Method Removed Successfully.`,
       status: "unread"
     });
-
-
 
     res.status(200).json({ message: "Payment Method Removed Successfully" });
   } catch (error) {
