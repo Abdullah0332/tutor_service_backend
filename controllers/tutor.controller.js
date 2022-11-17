@@ -12,6 +12,7 @@ const {
 } = require("../services/tutor.service.js");
 const { filteredFCMTokens, sendNotification } = require("../libraries/pushNotification.js");
 const notificationModel = require("../models/notification.model.js");
+const { class_booking_email_user, class_booking_email_tutor } = require("../libraries/emails/email.sender.js");
 
 // ---------------------------------------------------------------
 // --------------------- UPDATE TUTOR PROFILE -----------------------------

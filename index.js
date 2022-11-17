@@ -8,7 +8,7 @@ const path = require("path");
 const admin = require("firebase-admin");
 const webpush = require("web-push");
 const serviceAccount = require("./key/tutor-82f52-firebase-adminsdk-m1u2l-f5bf4c4f0e.json");
-
+const cron = require("node-cron");
 const apiRouter = require("./routes/routes.js");
 const config = require("./config/index.js");
 
@@ -19,6 +19,10 @@ webpush.setVapidDetails(
   config.VAPID_PUBLIC_KEY,
   config.VAPID_PRIVATE_KEY
 );
+
+cron.schedule("1 * * * * *", () => {
+  console.log("running a task every minute");
+});
 
 //@initializing App
 const app = express();
