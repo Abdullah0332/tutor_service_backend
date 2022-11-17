@@ -112,7 +112,7 @@ exports.login = async (req, res, next) => {
     if (user?.status === "blocked")
       return res.status(404).json({ message: "User is blocked by admin." });
 
-    if (user?.email_verified)
+    if (!user?.email_verified)
       return res.status(404).json({ message: "Please Verify your email." });
 
     const token = user.getJwtToken();
