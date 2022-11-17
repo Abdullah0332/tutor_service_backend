@@ -47,8 +47,8 @@ const verify_email = async options => {
 
 const class_booking_email_user = async options => {
   const emailTemplate = await ejs.renderFile(
-    __dirname + "/email_templates/body.ejs",
-    { body: options.body }
+    __dirname + "/email_templates/booking.ejs",
+    { body: options.body, title: options.subject }
   );
 
   const data = {
@@ -63,8 +63,8 @@ const class_booking_email_user = async options => {
 
 const class_booking_email_tutor = async options => {
   const emailTemplate = await ejs.renderFile(
-    __dirname + "/email_templates/body.ejs",
-    { body: options.body }
+    __dirname + "/email_templates/booking.ejs",
+    { body: options.body, title: options.subject }
   );
 
   const data = {

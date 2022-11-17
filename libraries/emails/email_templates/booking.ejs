@@ -1,13 +1,30 @@
 <%- include('include/head.ejs')%>
-<div>
-  <!-- paragraph or text div -->
-  <h1>Hello,</h1>
-  <br />
-  <%= body %><br /><br /><br />
-  <br /><br />
-  If you need further assistance, please contact our Help team.
-  <br /><br />Thanks,
-  <br />
-  TutorService Team
+
+<div style="margin-top: 20px; margin-bottom: 60px">
+  <h3
+    style="
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #080226;
+      text-transform: capitalize;
+    ">
+    <%= title %>
+  </h3>
 </div>
+<div style="text-align: left; margin-bottom: 60px">
+  <p
+    style="
+      margin: 0;
+      font-size: 14px;
+      color: #363131;
+      letter-spacing: 0.5px;
+      line-height: 1.7;
+    ">
+    <span style="font-weight: 500">Hello</span>
+    <br />
+    <%= body %><br />
+  </p>
+</div>
+
 <%- include('include/end.ejs')%>
