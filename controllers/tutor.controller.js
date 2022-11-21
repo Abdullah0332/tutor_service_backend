@@ -151,8 +151,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       travel_price,
       total_price,
       slot_time,
-      start_time,
-      end_time,
+      time,
       class_date: moment(req.body?.date).format("YYYY-MM-DD"),
     });
 

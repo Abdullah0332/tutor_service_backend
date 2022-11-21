@@ -20,8 +20,8 @@ const classSchema = mongoose.Schema(
     completed: { type: Boolean, default: false },
     reviewed_by: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     time: {
-      start_time: { type: Date },
-      end_time: { type: Date }
+      start_time: { type: String },
+      end_time: { type: String }
     }
   },
   { timestamps: true }
