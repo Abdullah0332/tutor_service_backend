@@ -12,6 +12,7 @@ const cron = require("node-cron");
 const apiRouter = require("./routes/routes.js");
 const config = require("./config/index.js");
 const { class_reminder_email } = require("./libraries/emails/email.sender.js");
+const ClassModel = require("./models/class.model");
 
 const PORT = process.env.PORT || 3000;
 
@@ -21,8 +22,13 @@ webpush.setVapidDetails(
   config.VAPID_PRIVATE_KEY
 );
 
-cron.schedule("*/5 * * * *", async () => {
+// cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/5 * * * * *", async () => {
   console.log("running a task every minute");
+  // const classes = await ClassModel.find({
+  //   "time.start_time": { $gte: new Date() }
+  // });
+  // console.log(classes.length, new Date());
   // await class_reminder_email({
   //   email: "abdullah.khan10032@gmail.com",
   //   subject: "Reminder"
