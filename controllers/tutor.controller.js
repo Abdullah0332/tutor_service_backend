@@ -121,6 +121,7 @@ exports.update_tutor_schedule = async (req, res, next) => {
       slot_time,
       start_time,
       end_time,
+      time,
       class_name,
     } = req.body;
     const { id } = req.params;
