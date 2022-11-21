@@ -11,6 +11,7 @@ const serviceAccount = require("./key/tutor-82f52-firebase-adminsdk-m1u2l-f5bf4c
 const cron = require("node-cron");
 const apiRouter = require("./routes/routes.js");
 const config = require("./config/index.js");
+const { class_reminder_email } = require("./libraries/emails/email.sender.js");
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,8 +21,12 @@ webpush.setVapidDetails(
   config.VAPID_PRIVATE_KEY
 );
 
-cron.schedule("1 * * * * *", () => {
+cron.schedule("*/5 * * * *", async () => {
   console.log("running a task every minute");
+  // await class_reminder_email({
+  //   email: "abdullah.khan10032@gmail.com",
+  //   subject: "Reminder"
+  // });
 });
 
 //@initializing App

@@ -77,9 +77,26 @@ const class_booking_email_tutor = async options => {
   await transporter.sendMail(data);
 };
 
+const class_reminder_email = async options => {
+  const emailTemplate = await ejs.renderFile(
+    __dirname + "/email_templates/reminder.ejs",
+    {}
+  );
+
+  const data = {
+    to: options.email,
+    from: `${config.SENDING_EMAIL} Tutor Service`,
+    subject: options.subject,
+    html: emailTemplate
+  };
+
+  await transporter.sendMail(data);
+};
+
 module.exports = {
   forgot_password_email,
   verify_email,
   class_booking_email_user,
-  class_booking_email_tutor
+  class_booking_email_tutor,
+  class_reminder_email
 };
