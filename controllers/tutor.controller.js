@@ -209,17 +209,19 @@ exports.update_tutor_schedule = async (req, res, next) => {
       status: "unread",
     })
 
-    // await class_booking_email_user({
-    //   email: req?.user?.email,
-    //   subject: "Your lesson has been booked!",
-    //   body: `Your ${new_class?.title} lesson with ${tutor_details?.first_name} ${tutor_details?.last_name} has been booked on date/time. We will notify you an hour in advance.`
-    // });
+    try { 
+       await class_booking_email_user({
+      email: req?.user?.email,
+      subject: "Your lesson has been booked!",
+      body: `Your ${new_class?.title} lesson with ${tutor_details?.first_name} ${tutor_details?.last_name} has been booked on date/time. We will notify you an hour in advance.`
+    });
 
-    // await class_booking_email_tutor({
-    //   email: tutor_details?.email,
-    //   subject: "Your lesson has been booked!",
-    //   body: `Your ${new_class?.title} lesson with ${req?.user?.first_name} ${req?.user?.last_name} has been booked on date/time. We will notify you an hour in advance.`
-    // });
+    await class_booking_email_tutor({
+      email: tutor_details?.email,
+      subject: "Your lesson has been booked!",
+      body: `Your ${new_class?.title} lesson with ${req?.user?.first_name} ${req?.user?.last_name} has been booked on date/time. We will notify you an hour in advance.`
+    });
+    } catch (error){console.log(error) }
 
 
     res.status(200).json(updated_tutor_profile);
