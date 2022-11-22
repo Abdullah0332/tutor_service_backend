@@ -442,10 +442,18 @@ exports.place_review = async (req, res, next) => {
 // --------------------- PURCHASES / EARNINGs  -----------------------------
 // ---------------------------------------------------------------
 exports.purchases_earnings = async (req, res, next) => {
-  try {
-    let purchases = await PaymentModel.find({ user_id: req.user._id }).populate(
-      "tutor_id user_id class_id"
-    );
+  try {    
+    let purchases
+    if (req.user.user_type === "tutor") {
+      purchases   = await PaymentModel.find({ tutor_id: req.user._id }).populate(
+         "tutor_id user_id class_id"
+      );
+    } else {
+      purchases   = await PaymentModel.find({ user_id: req.user._id }).populate(
+         "tutor_id user_id class_id"
+      );
+    }
+    
     res.status(200).json(purchases);
   } catch (error) {
     res.status(500).json({ message: error?.message });

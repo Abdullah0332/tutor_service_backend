@@ -23,17 +23,26 @@ webpush.setVapidDetails(
 );
 
 // cron.schedule("*/5 * * * *", async () => {
-cron.schedule("*/5 * * * * *", async () => {
-  console.log("running a task every minute");
-  // const classes = await ClassModel.find({
-  //   "time.start_time": { $gte: new Date() }
-  // });
-  // console.log(classes.length, new Date());
-  // await class_reminder_email({
-  //   email: "abdullah.khan10032@gmail.com",
-  //   subject: "Reminder"
-  // });
-});
+// cron.schedule("*/5 * * * * *", async () => {
+// const classes = await ClassModel.aggregate([
+//   { $project: { start_time: { $minute: new Date() } } }
+// ]);
+// console.log(classes);
+// console.log("running a task every minute");
+// const classes = await ClassModel.find({
+//   start_time: { $gte: new Date() }
+// });
+// for (let i = 0; i < classes.length; i++) {
+//   console.log(classes[i].start_time.getTime());
+//   let diff = Math.abs(classes[i].start_time - new Date());
+//   let minutes = Math.floor(diff / 1000 / 60);
+//   console.log(minutes);
+// }
+// await class_reminder_email({
+//   email: "abdullah.khan10032@gmail.com",
+//   subject: "Reminder"
+// });
+// });
 
 //@initializing App
 const app = express();
