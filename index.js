@@ -11,8 +11,7 @@ const serviceAccount = require("./key/tutor-82f52-firebase-adminsdk-m1u2l-f5bf4c
 const cron = require("node-cron");
 const apiRouter = require("./routes/routes.js");
 const config = require("./config/index.js");
-const { class_reminder_email } = require("./libraries/emails/email.sender.js");
-const ClassModel = require("./models/class.model");
+const { emailReminders } = require("./libraries/utils.js");
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,26 +22,9 @@ webpush.setVapidDetails(
 );
 
 // cron.schedule("*/5 * * * *", async () => {
-// cron.schedule("*/5 * * * * *", async () => {
-// const classes = await ClassModel.aggregate([
-//   { $project: { start_time: { $minute: new Date() } } }
-// ]);
-// console.log(classes);
-// console.log("running a task every minute");
-// const classes = await ClassModel.find({
-//   start_time: { $gte: new Date() }
-// });
-// for (let i = 0; i < classes.length; i++) {
-//   console.log(classes[i].start_time.getTime());
-//   let diff = Math.abs(classes[i].start_time - new Date());
-//   let minutes = Math.floor(diff / 1000 / 60);
-//   console.log(minutes);
-// }
-// await class_reminder_email({
-//   email: "abdullah.khan10032@gmail.com",
-//   subject: "Reminder"
-// });
-// });
+cron.schedule("*/5 * * * *", async () => {
+  await emailReminders();
+});
 
 //@initializing App
 const app = express();

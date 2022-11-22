@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport(
   })
 );
 
-const forgot_password_email = async options => {
+const forgot_password_email = async (options) => {
   const emailTemplate = await ejs.renderFile(
     __dirname + "/email_templates/forgot_password.ejs",
     { name: options.name, OTP: options.otp }
@@ -29,7 +29,7 @@ const forgot_password_email = async options => {
   await transporter.sendMail(data);
 };
 
-const verify_email = async options => {
+const verify_email = async (options) => {
   const emailTemplate = await ejs.renderFile(
     __dirname + "/email_templates/verify_email.ejs",
     { name: options.name, body: options.body, paramsKey: options.paramsKey }
@@ -45,7 +45,7 @@ const verify_email = async options => {
   await transporter.sendMail(data);
 };
 
-const class_booking_email_user = async options => {
+const class_booking_email_user = async (options) => {
   const emailTemplate = await ejs.renderFile(
     __dirname + "/email_templates/booking.ejs",
     { body: options.body, title: options.subject }
@@ -61,7 +61,7 @@ const class_booking_email_user = async options => {
   await transporter.sendMail(data);
 };
 
-const class_booking_email_tutor = async options => {
+const class_booking_email_tutor = async (options) => {
   const emailTemplate = await ejs.renderFile(
     __dirname + "/email_templates/booking.ejs",
     { body: options.body, title: options.subject }
@@ -77,10 +77,38 @@ const class_booking_email_tutor = async options => {
   await transporter.sendMail(data);
 };
 
-const class_reminder_email = async options => {
+const class_reminder_email_user = async (options) => {
   const emailTemplate = await ejs.renderFile(
     __dirname + "/email_templates/reminder.ejs",
-    {}
+    {
+      body: options?.body,
+      class_day: options?.class_day,
+      class_date: options?.class_date,
+      class_time: options?.class_time,
+      user_name: options?.user_name
+    }
+  );
+
+  const data = {
+    to: options.email,
+    from: `${config.SENDING_EMAIL} Tutor Service`,
+    subject: options.subject,
+    html: emailTemplate
+  };
+
+  await transporter.sendMail(data);
+};
+
+const class_reminder_email_tutor = async (options) => {
+  const emailTemplate = await ejs.renderFile(
+    __dirname + "/email_templates/reminder.ejs",
+    {
+      body: options?.body,
+      class_day: options?.class_day,
+      class_date: options?.class_date,
+      class_time: options?.class_time,
+      user_name: options?.user_name
+    }
   );
 
   const data = {
@@ -98,5 +126,6 @@ module.exports = {
   verify_email,
   class_booking_email_user,
   class_booking_email_tutor,
-  class_reminder_email
+  class_reminder_email_user,
+  class_reminder_email_tutor
 };

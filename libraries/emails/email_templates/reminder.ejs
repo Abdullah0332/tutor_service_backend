@@ -1,5 +1,6 @@
 <%- include('include/head.ejs')%>
 
+
 <div style="margin-top: 20px; margin-bottom: 60px">
   <h3
     style="
@@ -9,7 +10,7 @@
       color: #080226;
       text-transform: capitalize;
     ">
-    TEST
+    Class Reminder
   </h3>
 </div>
 <div style="text-align: left; margin-bottom: 60px">
@@ -21,9 +22,20 @@
       letter-spacing: 0.5px;
       line-height: 1.7;
     ">
-    <span style="font-weight: 500">Hello</span>
-    <br />
-    BODY<br />
+    <span style="font-weight: 500">Hello  <%= user_name %></span>
+
+    <div style="display: flex; justify-content: space-evenly;"> 
+      <div style="margin-right: 2rem;">
+        <h3>DATE:</h3>
+        <div><%= class_day %></div>
+        <div><%= class_date %></div>
+      </div>
+      <div>
+            <h3>TIME:</h3>
+        <div><%= class_time %></div>
+      </div>
+    </div>
+    <br /><%= body %>
   </p>
 </div>
 

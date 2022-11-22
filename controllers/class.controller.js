@@ -445,11 +445,11 @@ exports.purchases_earnings = async (req, res, next) => {
   try {    
     let purchases
     if (req.user.user_type === "tutor") {
-      purchases   = await PaymentModel.find({ tutor_id: req.user._id }).populate(
+      purchases = await PaymentModel.find({ tutor_id: req.user._id }).populate(
          "tutor_id user_id class_id"
       );
     } else {
-      purchases   = await PaymentModel.find({ user_id: req.user._id }).populate(
+      purchases = await PaymentModel.find({ user_id: req.user._id }).populate(
          "tutor_id user_id class_id"
       );
     }
